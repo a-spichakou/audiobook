@@ -1,0 +1,788 @@
+!<arch>
+__.PKGDEF       0           0     0     644     62224     `
+go object linux 386 go1.5.3 X:none
+build id "be1ff9aaa11653f7f525d06d9b4be3ce43d16748"
+
+$$
+package aws4
+	import runtime "runtime"
+	import io "io"
+	import http "net/http"
+	import fmt "fmt"
+	import os "os"
+	import ioutil "io/ioutil"
+	import bytes "bytes"
+	import time "time"
+	import sort "sort"
+	import filepath "path/filepath"
+	import url "net/url"
+	import strings "strings"
+	import hmac "crypto/hmac"
+	import sha256 "crypto/sha256"
+	type @"net/url".Userinfo struct { @"net/url".username string; @"net/url".password string; @"net/url".passwordSet bool }
+	func (@"net/url".uÂ·3 *@"net/url".Userinfo "esc:0x22") Password () (? string, ? bool) { if @"net/url".uÂ·3.@"net/url".passwordSet { return @"net/url".uÂ·3.@"net/url".password, true }; return "", false }
+	func (@"net/url".uÂ·2 *@"net/url".Userinfo "esc:0x22") String () (? string)
+	func (@"net/url".uÂ·2 *@"net/url".Userinfo "esc:0x22") Username () (? string) { return @"net/url".uÂ·2.@"net/url".username }
+	type @"net/url".Values map[string][]string
+	func (@"net/url".vÂ·1 @"net/url".Values "esc:0x9") Add (@"net/url".keyÂ·2 string, @"net/url".valueÂ·3 string) { @"net/url".vÂ·1[@"net/url".keyÂ·2] = append(@"net/url".vÂ·1[@"net/url".keyÂ·2], @"net/url".valueÂ·3) }
+	func (@"net/url".vÂ·1 @"net/url".Values "esc:0x1") Del (@"net/url".keyÂ·2 string "esc:0x1") { delete(@"net/url".vÂ·1, @"net/url".keyÂ·2) }
+	func (@"net/url".vÂ·2 @"net/url".Values "esc:0x1") Encode () (? string)
+	func (@"net/url".vÂ·2 @"net/url".Values "esc:0x1") Get (@"net/url".keyÂ·3 string "esc:0x1") (? string) { if @"net/url".vÂ·2 == nil { return "" }; var @"net/url".vsÂ·4 []string; ; var @"net/url".okÂ·5 bool; ; @"net/url".vsÂ·4, @"net/url".okÂ·5 = @"net/url".vÂ·2[@"net/url".keyÂ·3]; if !@"net/url".okÂ·5 || len(@"net/url".vsÂ·4) == 0x0 { return "" }; return @"net/url".vsÂ·4[0x0] }
+	func (@"net/url".vÂ·1 @"net/url".Values "esc:0x1") Set (@"net/url".keyÂ·2 string, @"net/url".valueÂ·3 string) { @"net/url".vÂ·1[@"net/url".keyÂ·2] = ([]string{ 0x0:@"net/url".valueÂ·3 }) }
+	type @"net/url".URL struct { Scheme string; Opaque string; User *@"net/url".Userinfo; Host string; Path string; RawPath string; RawQuery string; Fragment string }
+	func (@"net/url".uÂ·2 *@"net/url".URL "esc:0x22") EscapedPath () (? string)
+	func (@"net/url".uÂ·2 *@"net/url".URL "esc:0x1") IsAbs () (? bool) { return @"net/url".uÂ·2.Scheme != "" }
+	func (@"net/url".uÂ·3 *@"net/url".URL "esc:0x9") Parse (@"net/url".refÂ·4 string) (? *@"net/url".URL, ? error)
+	func (@"net/url".uÂ·2 *@"net/url".URL "esc:0x9") Query () (? @"net/url".Values)
+	func (@"net/url".uÂ·2 *@"net/url".URL "esc:0x22") RequestURI () (? string)
+	func (@"net/url".uÂ·2 *@"net/url".URL "esc:0xa") ResolveReference (@"net/url".refÂ·3 *@"net/url".URL "esc:0xa") (? *@"net/url".URL)
+	func (@"net/url".uÂ·2 *@"net/url".URL "esc:0x9") String () (? string)
+	type @"io".Writer interface { Write(@"io".p []byte) (@"io".n int, @"io".err error) }
+	type @"net/http".keyValues struct { @"net/http".key string; @"net/http".values []string }
+	type @"net/http".headerSorter struct { @"net/http".kvs []@"net/http".keyValues }
+	func (@"net/http".sÂ·2 *@"net/http".headerSorter "esc:0x1") Len () (? int) { return len(@"net/http".sÂ·2.@"net/http".kvs) }
+	func (@"net/http".sÂ·2 *@"net/http".headerSorter "esc:0x1") Less (@"net/http".iÂ·3 int, @"net/http".jÂ·4 int) (? bool) { return @"net/http".sÂ·2.@"net/http".kvs[@"net/http".iÂ·3].@"net/http".key < @"net/http".sÂ·2.@"net/http".kvs[@"net/http".jÂ·4].@"net/http".key }
+	func (@"net/http".sÂ·1 *@"net/http".headerSorter "esc:0x9") Swap (@"net/http".iÂ·2 int, @"net/http".jÂ·3 int) { @"net/http".sÂ·1.@"net/http".kvs[@"net/http".iÂ·2], @"net/http".sÂ·1.@"net/http".kvs[@"net/http".jÂ·3] = @"net/http".sÂ·1.@"net/http".kvs[@"net/http".jÂ·3], @"net/http".sÂ·1.@"net/http".kvs[@"net/http".iÂ·2] }
+	type @"net/http".Header map[string][]string
+	func (@"net/http".hÂ·1 @"net/http".Header "esc:0x9") Add (@"net/http".keyÂ·2 string, @"net/http".valueÂ·3 string)
+	func (@"net/http".hÂ·1 @"net/http".Header "esc:0x1") Del (@"net/http".keyÂ·2 string "esc:0x1")
+	func (@"net/http".hÂ·2 @"net/http".Header "esc:0x1") Get (@"net/http".keyÂ·3 string "esc:0x1") (? string)
+	func (@"net/http".hÂ·1 @"net/http".Header "esc:0x1") Set (@"net/http".keyÂ·2 string, @"net/http".valueÂ·3 string)
+	func (@"net/http".hÂ·2 @"net/http".Header "esc:0x9") Write (@"net/http".wÂ·3 @"io".Writer) (? error)
+	func (@"net/http".hÂ·2 @"net/http".Header "esc:0x9") WriteSubset (@"net/http".wÂ·3 @"io".Writer, @"net/http".excludeÂ·4 map[string]bool "esc:0x1") (? error)
+	func (@"net/http".hÂ·2 @"net/http".Header "esc:0x9") @"net/http".clone () (? @"net/http".Header)
+	func (@"net/http".hÂ·2 @"net/http".Header "esc:0x1") @"net/http".get (@"net/http".keyÂ·3 string "esc:0x1") (? string) { var @"net/http".vÂ·4 []string; ; @"net/http".vÂ·4 = @"net/http".hÂ·2[@"net/http".keyÂ·3]; if len(@"net/http".vÂ·4) > 0x0 { return @"net/http".vÂ·4[0x0] }; return "" }
+	func (@"net/http".hÂ·3 @"net/http".Header "esc:0x9") @"net/http".sortedKeyValues (@"net/http".excludeÂ·4 map[string]bool "esc:0x1") (@"net/http".kvsÂ·1 []@"net/http".keyValues, @"net/http".hsÂ·2 *@"net/http".headerSorter)
+	type @"io".ReadCloser interface { Close() (? error); Read(@"io".p []byte) (@"io".n int, @"io".err error) }
+	import multipart "mime/multipart" // indirect
+	import textproto "net/textproto" // indirect
+	type @"net/textproto".MIMEHeader map[string][]string
+	func (@"net/textproto".hÂ·1 @"net/textproto".MIMEHeader "esc:0x9") Add (@"net/textproto".keyÂ·2 string, @"net/textproto".valueÂ·3 string)
+	func (@"net/textproto".hÂ·1 @"net/textproto".MIMEHeader "esc:0x1") Del (@"net/textproto".keyÂ·2 string "esc:0x1")
+	func (@"net/textproto".hÂ·2 @"net/textproto".MIMEHeader "esc:0x1") Get (@"net/textproto".keyÂ·3 string "esc:0x1") (? string)
+	func (@"net/textproto".hÂ·1 @"net/textproto".MIMEHeader "esc:0x1") Set (@"net/textproto".keyÂ·2 string, @"net/textproto".valueÂ·3 string)
+	type @"mime/multipart".File interface { Close() (? error); Read(@"io".p []byte) (@"io".n int, @"io".err error); ReadAt(@"io".p []byte, @"io".off int64) (@"io".n int, @"io".err error); Seek(@"io".offset int64, @"io".whence int) (? int64, ? error) }
+	type @"mime/multipart".FileHeader struct { Filename string; Header @"net/textproto".MIMEHeader; @"mime/multipart".content []byte; @"mime/multipart".tmpfile string }
+	func (@"mime/multipart".fhÂ·3 *@"mime/multipart".FileHeader) Open () (? @"mime/multipart".File, ? error)
+	type @"mime/multipart".Form struct { Value map[string][]string; File map[string][]*@"mime/multipart".FileHeader }
+	func (@"mime/multipart".fÂ·2 *@"mime/multipart".Form "esc:0x9") RemoveAll () (? error)
+	import tls "crypto/tls" // indirect
+	import x509 "crypto/x509" // indirect
+	type @"crypto/x509".SignatureAlgorithm int
+	type @"crypto/x509".PublicKeyAlgorithm int
+	import big "math/big" // indirect
+	type @"math/big".Word uintptr
+	type @"math/big".divisor struct { @"math/big".bbb @"math/big".nat; @"math/big".nbits int; @"math/big".ndigits int }
+	import rand "math/rand" // indirect
+	type @"math/rand".Source interface { Int63() (? int64); Seed(@"math/rand".seed int64) }
+	type @"math/rand".Rand struct { @"math/rand".src @"math/rand".Source }
+	func (@"math/rand".rÂ·2 *@"math/rand".Rand "esc:0x9") ExpFloat64 () (? float64)
+	func (@"math/rand".rÂ·2 *@"math/rand".Rand "esc:0x9") Float32 () (? float32)
+	func (@"math/rand".rÂ·2 *@"math/rand".Rand "esc:0x9") Float64 () (? float64)
+	func (@"math/rand".rÂ·2 *@"math/rand".Rand "esc:0x9") Int () (? int)
+	func (@"math/rand".rÂ·2 *@"math/rand".Rand "esc:0x9") Int31 () (? int32)
+	func (@"math/rand".rÂ·2 *@"math/rand".Rand "esc:0x9") Int31n (@"math/rand".nÂ·3 int32) (? int32)
+	func (@"math/rand".rÂ·2 *@"math/rand".Rand "esc:0x9") Int63 () (? int64)
+	func (@"math/rand".rÂ·2 *@"math/rand".Rand "esc:0x9") Int63n (@"math/rand".nÂ·3 int64) (? int64)
+	func (@"math/rand".rÂ·2 *@"math/rand".Rand "esc:0x9") Intn (@"math/rand".nÂ·3 int) (? int)
+	func (@"math/rand".rÂ·2 *@"math/rand".Rand "esc:0x9") NormFloat64 () (? float64)
+	func (@"math/rand".rÂ·2 *@"math/rand".Rand "esc:0x9") Perm (@"math/rand".nÂ·3 int) (? []int)
+	func (@"math/rand".rÂ·1 *@"math/rand".Rand "esc:0x9") Seed (@"math/rand".seedÂ·2 int64)
+	func (@"math/rand".rÂ·2 *@"math/rand".Rand "esc:0x9") Uint32 () (? uint32)
+	type @"io".ByteScanner interface { ReadByte() (@"io".c byte, @"io".err error); UnreadByte() (? error) }
+	type @"math/big".nat []@"math/big".Word
+	func (@"math/big".zÂ·2 @"math/big".nat) @"math/big".add (@"math/big".xÂ·3 @"math/big".nat, @"math/big".yÂ·4 @"math/big".nat) (? @"math/big".nat)
+	func (@"math/big".zÂ·2 @"math/big".nat "esc:0x12") @"math/big".and (@"math/big".xÂ·3 @"math/big".nat "esc:0x1", @"math/big".yÂ·4 @"math/big".nat "esc:0x1") (? @"math/big".nat)
+	func (@"math/big".zÂ·2 @"math/big".nat "esc:0x12") @"math/big".andNot (@"math/big".xÂ·3 @"math/big".nat "esc:0x9", @"math/big".yÂ·4 @"math/big".nat "esc:0x1") (? @"math/big".nat)
+	func (@"math/big".xÂ·2 @"math/big".nat "esc:0x1") @"math/big".bit (@"math/big".iÂ·3 uint) (? uint) { var @"math/big".jÂ·4 uint; ; @"math/big".jÂ·4 = @"math/big".iÂ·3 / 0x20; if @"math/big".jÂ·4 >= uint(len(@"math/big".xÂ·2)) { return 0x0 }; return uint(@"math/big".xÂ·2[@"math/big".jÂ·4] >> (@"math/big".iÂ·3 % 0x20) & @"math/big".Word(0x1)) }
+	func (@"math/big".xÂ·2 @"math/big".nat "esc:0x1") @"math/big".bitLen () (? int)
+	func (@"math/big".zÂ·2 @"math/big".nat "esc:0x1") @"math/big".bytes (@"math/big".bufÂ·3 []byte "esc:0x1") (@"math/big".iÂ·1 int)
+	func (@"math/big".zÂ·1 @"math/big".nat "esc:0x1") @"math/big".clear ()
+	func (@"math/big".xÂ·2 @"math/big".nat "esc:0x1") @"math/big".cmp (@"math/big".yÂ·3 @"math/big".nat "esc:0x1") (@"math/big".rÂ·1 int)
+	func (@"math/big".qÂ·1 @"math/big".nat) @"math/big".convertWords (@"math/big".sÂ·2 []byte "esc:0x1", @"math/big".charsetÂ·3 string "esc:0x1", @"math/big".bÂ·4 @"math/big".Word, @"math/big".ndigitsÂ·5 int, @"math/big".bbÂ·6 @"math/big".Word, @"math/big".tableÂ·7 []@"math/big".divisor "esc:0x9")
+	func (@"math/big".xÂ·2 @"math/big".nat "esc:0x9") @"math/big".decimalString () (? string)
+	func (@"math/big".zÂ·3 @"math/big".nat) @"math/big".div (@"math/big".z2Â·4 @"math/big".nat, @"math/big".uÂ·5 @"math/big".nat, @"math/big".vÂ·6 @"math/big".nat) (@"math/big".qÂ·1 @"math/big".nat, @"math/big".rÂ·2 @"math/big".nat)
+	func (@"math/big".zÂ·3 @"math/big".nat "esc:0x12") @"math/big".divLarge (@"math/big".uÂ·4 @"math/big".nat, @"math/big".uInÂ·5 @"math/big".nat, @"math/big".vÂ·6 @"math/big".nat) (@"math/big".qÂ·1 @"math/big".nat, @"math/big".rÂ·2 @"math/big".nat)
+	func (@"math/big".zÂ·3 @"math/big".nat) @"math/big".divW (@"math/big".xÂ·4 @"math/big".nat, @"math/big".yÂ·5 @"math/big".Word) (@"math/big".qÂ·1 @"math/big".nat, @"math/big".rÂ·2 @"math/big".Word)
+	func (@"math/big".zÂ·2 @"math/big".nat) @"math/big".expNN (@"math/big".xÂ·3 @"math/big".nat, @"math/big".yÂ·4 @"math/big".nat "esc:0x1", @"math/big".mÂ·5 @"math/big".nat) (? @"math/big".nat)
+	func (@"math/big".zÂ·2 @"math/big".nat) @"math/big".expNNMontgomery (@"math/big".xÂ·3 @"math/big".nat, @"math/big".yÂ·4 @"math/big".nat "esc:0x1", @"math/big".mÂ·5 @"math/big".nat) (? @"math/big".nat)
+	func (@"math/big".zÂ·2 @"math/big".nat) @"math/big".expNNWindowed (@"math/big".xÂ·3 @"math/big".nat, @"math/big".yÂ·4 @"math/big".nat "esc:0x1", @"math/big".mÂ·5 @"math/big".nat) (? @"math/big".nat)
+	func (@"math/big".zÂ·2 @"math/big".nat) @"math/big".expWW (@"math/big".xÂ·3 @"math/big".Word, @"math/big".yÂ·4 @"math/big".Word) (? @"math/big".nat)
+	func (@"math/big".xÂ·2 @"math/big".nat "esc:0x9") @"math/big".hexString () (? string)
+	func (@"math/big".zÂ·2 @"math/big".nat "esc:0x12") @"math/big".make (@"math/big".nÂ·3 int) (? @"math/big".nat)
+	func (@"math/big".xÂ·2 @"math/big".nat) @"math/big".modW (@"math/big".dÂ·3 @"math/big".Word) (@"math/big".rÂ·1 @"math/big".Word)
+	func (@"math/big".zÂ·2 @"math/big".nat) @"math/big".montgomery (@"math/big".xÂ·3 @"math/big".nat, @"math/big".yÂ·4 @"math/big".nat "esc:0x1", @"math/big".mÂ·5 @"math/big".nat, @"math/big".kÂ·6 @"math/big".Word, @"math/big".nÂ·7 int) (? @"math/big".nat)
+	func (@"math/big".zÂ·2 @"math/big".nat) @"math/big".mul (@"math/big".xÂ·3 @"math/big".nat, @"math/big".yÂ·4 @"math/big".nat) (? @"math/big".nat)
+	func (@"math/big".zÂ·2 @"math/big".nat) @"math/big".mulAddWW (@"math/big".xÂ·3 @"math/big".nat, @"math/big".yÂ·4 @"math/big".Word, @"math/big".rÂ·5 @"math/big".Word) (? @"math/big".nat)
+	func (@"math/big".zÂ·2 @"math/big".nat) @"math/big".mulRange (@"math/big".aÂ·3 uint64, @"math/big".bÂ·4 uint64) (? @"math/big".nat)
+	func (@"math/big".zÂ·2 @"math/big".nat "esc:0x12") @"math/big".norm () (? @"math/big".nat)
+	func (@"math/big".zÂ·2 @"math/big".nat "esc:0x12") @"math/big".or (@"math/big".xÂ·3 @"math/big".nat "esc:0x9", @"math/big".yÂ·4 @"math/big".nat "esc:0x9") (? @"math/big".nat)
+	func (@"math/big".nÂ·2 @"math/big".nat) @"math/big".probablyPrime (@"math/big".repsÂ·3 int) (? bool)
+	func (@"math/big".zÂ·2 @"math/big".nat "esc:0x12") @"math/big".random (@"math/big".randÂ·3 *@"math/rand".Rand "esc:0x9", @"math/big".limitÂ·4 @"math/big".nat "esc:0x1", @"math/big".nÂ·5 int) (? @"math/big".nat)
+	func (@"math/big".zÂ·5 @"math/big".nat) @"math/big".scan (@"math/big".rÂ·6 @"io".ByteScanner, @"math/big".baseÂ·7 int, @"math/big".fracOkÂ·8 bool) (@"math/big".resÂ·1 @"math/big".nat, @"math/big".bÂ·2 int, @"math/big".countÂ·3 int, @"math/big".errÂ·4 error)
+	func (@"math/big".zÂ·2 @"math/big".nat "esc:0x12") @"math/big".set (@"math/big".xÂ·3 @"math/big".nat "esc:0x9") (? @"math/big".nat)
+	func (@"math/big".zÂ·2 @"math/big".nat "esc:0x12") @"math/big".setBit (@"math/big".xÂ·3 @"math/big".nat "esc:0x9", @"math/big".iÂ·4 uint, @"math/big".bÂ·5 uint) (? @"math/big".nat)
+	func (@"math/big".zÂ·2 @"math/big".nat "esc:0x12") @"math/big".setBytes (@"math/big".bufÂ·3 []byte "esc:0x1") (? @"math/big".nat)
+	func (@"math/big".zÂ·2 @"math/big".nat "esc:0x12") @"math/big".setUint64 (@"math/big".xÂ·3 uint64) (? @"math/big".nat)
+	func (@"math/big".zÂ·2 @"math/big".nat "esc:0x12") @"math/big".setWord (@"math/big".xÂ·3 @"math/big".Word) (? @"math/big".nat)
+	func (@"math/big".zÂ·2 @"math/big".nat) @"math/big".shl (@"math/big".xÂ·3 @"math/big".nat, @"math/big".sÂ·4 uint) (? @"math/big".nat)
+	func (@"math/big".zÂ·2 @"math/big".nat) @"math/big".shr (@"math/big".xÂ·3 @"math/big".nat, @"math/big".sÂ·4 uint) (? @"math/big".nat)
+	func (@"math/big".xÂ·2 @"math/big".nat "esc:0x1") @"math/big".sticky (@"math/big".iÂ·3 uint) (? uint)
+	func (@"math/big".xÂ·2 @"math/big".nat "esc:0x9") @"math/big".string (@"math/big".charsetÂ·3 string "esc:0x1") (? string)
+	func (@"math/big".zÂ·2 @"math/big".nat) @"math/big".sub (@"math/big".xÂ·3 @"math/big".nat, @"math/big".yÂ·4 @"math/big".nat) (? @"math/big".nat)
+	func (@"math/big".xÂ·2 @"math/big".nat "esc:0x1") @"math/big".trailingZeroBits () (? uint)
+	func (@"math/big".zÂ·2 @"math/big".nat "esc:0x12") @"math/big".xor (@"math/big".xÂ·3 @"math/big".nat "esc:0x9", @"math/big".yÂ·4 @"math/big".nat "esc:0x9") (? @"math/big".nat)
+	type @"fmt".State interface { Flag(@"fmt".c int) (? bool); Precision() (@"fmt".prec int, @"fmt".ok bool); Width() (@"fmt".wid int, @"fmt".ok bool); Write(@"fmt".b []byte) (@"fmt".ret int, @"fmt".err error) }
+	type @"fmt".ScanState interface { Read(@"fmt".buf []byte) (@"fmt".n int, @"fmt".err error); ReadRune() (@"fmt".r rune, @"fmt".size int, @"fmt".err error); SkipSpace(); Token(@"fmt".skipSpace bool, @"fmt".f func(? rune) (? bool)) (@"fmt".token []byte, @"fmt".err error); UnreadRune() (? error); Width() (@"fmt".wid int, @"fmt".ok bool) }
+	type @"math/big".Int struct { @"math/big".neg bool; @"math/big".abs @"math/big".nat }
+	func (@"math/big".zÂ·2 *@"math/big".Int "esc:0x1a") Abs (@"math/big".xÂ·3 *@"math/big".Int "esc:0x9") (? *@"math/big".Int)
+	func (@"math/big".zÂ·2 *@"math/big".Int "esc:0x1a") Add (@"math/big".xÂ·3 *@"math/big".Int "esc:0x9", @"math/big".yÂ·4 *@"math/big".Int "esc:0x9") (? *@"math/big".Int)
+	func (@"math/big".zÂ·2 *@"math/big".Int "esc:0x1a") And (@"math/big".xÂ·3 *@"math/big".Int "esc:0x9", @"math/big".yÂ·4 *@"math/big".Int "esc:0x9") (? *@"math/big".Int)
+	func (@"math/big".zÂ·2 *@"math/big".Int "esc:0x1a") AndNot (@"math/big".xÂ·3 *@"math/big".Int "esc:0x9", @"math/big".yÂ·4 *@"math/big".Int "esc:0x9") (? *@"math/big".Int)
+	func (@"math/big".zÂ·2 *@"math/big".Int "esc:0x1a") Binomial (@"math/big".nÂ·3 int64, @"math/big".kÂ·4 int64) (? *@"math/big".Int)
+	func (@"math/big".xÂ·2 *@"math/big".Int "esc:0x9") Bit (@"math/big".iÂ·3 int) (? uint)
+	func (@"math/big".xÂ·2 *@"math/big".Int "esc:0x1") BitLen () (? int)
+	func (@"math/big".xÂ·2 *@"math/big".Int "esc:0x22") Bits () (? []@"math/big".Word) { return @"math/big".xÂ·2.@"math/big".abs }
+	func (@"math/big".xÂ·2 *@"math/big".Int "esc:0x1") Bytes () (? []byte)
+	func (@"math/big".xÂ·2 *@"math/big".Int "esc:0x1") Cmp (@"math/big".yÂ·3 *@"math/big".Int "esc:0x1") (@"math/big".rÂ·1 int)
+	func (@"math/big".zÂ·2 *@"math/big".Int "esc:0x1a") Div (@"math/big".xÂ·3 *@"math/big".Int "esc:0x9", @"math/big".yÂ·4 *@"math/big".Int "esc:0x9") (? *@"math/big".Int)
+	func (@"math/big".zÂ·3 *@"math/big".Int "esc:0x1a") DivMod (@"math/big".xÂ·4 *@"math/big".Int "esc:0x9", @"math/big".yÂ·5 *@"math/big".Int "esc:0x9", @"math/big".mÂ·6 *@"math/big".Int "esc:0x8a") (? *@"math/big".Int, ? *@"math/big".Int)
+	func (@"math/big".zÂ·2 *@"math/big".Int "esc:0x1a") Exp (@"math/big".xÂ·3 *@"math/big".Int "esc:0x9", @"math/big".yÂ·4 *@"math/big".Int "esc:0x1", @"math/big".mÂ·5 *@"math/big".Int "esc:0x9") (? *@"math/big".Int)
+	func (@"math/big".xÂ·1 *@"math/big".Int "esc:0x9") Format (@"math/big".sÂ·2 @"fmt".State, @"math/big".chÂ·3 rune)
+	func (@"math/big".zÂ·2 *@"math/big".Int "esc:0x1a") GCD (@"math/big".xÂ·3 *@"math/big".Int "esc:0x9", @"math/big".yÂ·4 *@"math/big".Int "esc:0x9", @"math/big".aÂ·5 *@"math/big".Int "esc:0x9", @"math/big".bÂ·6 *@"math/big".Int "esc:0x9") (? *@"math/big".Int)
+	func (@"math/big".zÂ·2 *@"math/big".Int "esc:0x9") GobDecode (@"math/big".bufÂ·3 []byte "esc:0x1") (? error)
+	func (@"math/big".xÂ·3 *@"math/big".Int "esc:0x1") GobEncode () (? []byte, ? error)
+	func (@"math/big".xÂ·2 *@"math/big".Int "esc:0x1") Int64 () (? int64) { var @"math/big".vÂ·3 int64; ; @"math/big".vÂ·3 = int64(@"math/big".low64(@"math/big".xÂ·2.@"math/big".abs)); if @"math/big".xÂ·2.@"math/big".neg { @"math/big".vÂ·3 = -@"math/big".vÂ·3 }; return @"math/big".vÂ·3 }
+	func (@"math/big".zÂ·2 *@"math/big".Int "esc:0x1a") Lsh (@"math/big".xÂ·3 *@"math/big".Int "esc:0x9", @"math/big".nÂ·4 uint) (? *@"math/big".Int)
+	func (@"math/big".zÂ·3 *@"math/big".Int "esc:0x9") MarshalJSON () (? []byte, ? error)
+	func (@"math/big".zÂ·3 *@"math/big".Int "esc:0x9") MarshalText () (@"math/big".textÂ·1 []byte, @"math/big".errÂ·2 error)
+	func (@"math/big".zÂ·2 *@"math/big".Int "esc:0x1a") Mod (@"math/big".xÂ·3 *@"math/big".Int "esc:0x9", @"math/big".yÂ·4 *@"math/big".Int "esc:0x9") (? *@"math/big".Int)
+	func (@"math/big".zÂ·2 *@"math/big".Int "esc:0x1a") ModInverse (@"math/big".gÂ·3 *@"math/big".Int "esc:0x9", @"math/big".nÂ·4 *@"math/big".Int "esc:0x9") (? *@"math/big".Int)
+	func (@"math/big".zÂ·2 *@"math/big".Int "esc:0x1a") ModSqrt (@"math/big".xÂ·3 *@"math/big".Int "esc:0x9", @"math/big".pÂ·4 *@"math/big".Int) (? *@"math/big".Int)
+	func (@"math/big".zÂ·2 *@"math/big".Int "esc:0x1a") Mul (@"math/big".xÂ·3 *@"math/big".Int "esc:0x9", @"math/big".yÂ·4 *@"math/big".Int "esc:0x9") (? *@"math/big".Int)
+	func (@"math/big".zÂ·2 *@"math/big".Int "esc:0x1a") MulRange (@"math/big".aÂ·3 int64, @"math/big".bÂ·4 int64) (? *@"math/big".Int)
+	func (@"math/big".zÂ·2 *@"math/big".Int "esc:0x1a") Neg (@"math/big".xÂ·3 *@"math/big".Int "esc:0x9") (? *@"math/big".Int)
+	func (@"math/big".zÂ·2 *@"math/big".Int "esc:0x1a") Not (@"math/big".xÂ·3 *@"math/big".Int "esc:0x9") (? *@"math/big".Int)
+	func (@"math/big".zÂ·2 *@"math/big".Int "esc:0x1a") Or (@"math/big".xÂ·3 *@"math/big".Int "esc:0x9", @"math/big".yÂ·4 *@"math/big".Int "esc:0x9") (? *@"math/big".Int)
+	func (@"math/big".xÂ·2 *@"math/big".Int "esc:0x9") ProbablyPrime (@"math/big".nÂ·3 int) (? bool)
+	func (@"math/big".zÂ·2 *@"math/big".Int "esc:0x1a") Quo (@"math/big".xÂ·3 *@"math/big".Int "esc:0x9", @"math/big".yÂ·4 *@"math/big".Int "esc:0x9") (? *@"math/big".Int)
+	func (@"math/big".zÂ·3 *@"math/big".Int "esc:0x1a") QuoRem (@"math/big".xÂ·4 *@"math/big".Int "esc:0x9", @"math/big".yÂ·5 *@"math/big".Int "esc:0x9", @"math/big".rÂ·6 *@"math/big".Int "esc:0x8a") (? *@"math/big".Int, ? *@"math/big".Int)
+	func (@"math/big".zÂ·2 *@"math/big".Int "esc:0x1a") Rand (@"math/big".rndÂ·3 *@"math/rand".Rand "esc:0x9", @"math/big".nÂ·4 *@"math/big".Int "esc:0x1") (? *@"math/big".Int)
+	func (@"math/big".zÂ·2 *@"math/big".Int "esc:0x1a") Rem (@"math/big".xÂ·3 *@"math/big".Int "esc:0x9", @"math/big".yÂ·4 *@"math/big".Int "esc:0x9") (? *@"math/big".Int)
+	func (@"math/big".zÂ·2 *@"math/big".Int "esc:0x1a") Rsh (@"math/big".xÂ·3 *@"math/big".Int "esc:0x9", @"math/big".nÂ·4 uint) (? *@"math/big".Int)
+	func (@"math/big".zÂ·2 *@"math/big".Int "esc:0x9") Scan (@"math/big".sÂ·3 @"fmt".ScanState, @"math/big".chÂ·4 rune) (? error)
+	func (@"math/big".zÂ·2 *@"math/big".Int "esc:0x1a") Set (@"math/big".xÂ·3 *@"math/big".Int "esc:0x9") (? *@"math/big".Int)
+	func (@"math/big".zÂ·2 *@"math/big".Int "esc:0x1a") SetBit (@"math/big".xÂ·3 *@"math/big".Int "esc:0x9", @"math/big".iÂ·4 int, @"math/big".bÂ·5 uint) (? *@"math/big".Int)
+	func (@"math/big".zÂ·2 *@"math/big".Int "esc:0x12") SetBits (@"math/big".absÂ·3 []@"math/big".Word) (? *@"math/big".Int)
+	func (@"math/big".zÂ·2 *@"math/big".Int "esc:0x1a") SetBytes (@"math/big".bufÂ·3 []byte "esc:0x1") (? *@"math/big".Int)
+	func (@"math/big".zÂ·2 *@"math/big".Int "esc:0x1a") SetInt64 (@"math/big".xÂ·3 int64) (? *@"math/big".Int)
+	func (@"math/big".zÂ·3 *@"math/big".Int "esc:0x1a") SetString (@"math/big".sÂ·4 string, @"math/big".baseÂ·5 int) (? *@"math/big".Int, ? bool)
+	func (@"math/big".zÂ·2 *@"math/big".Int "esc:0x1a") SetUint64 (@"math/big".xÂ·3 uint64) (? *@"math/big".Int)
+	func (@"math/big".xÂ·2 *@"math/big".Int "esc:0x1") Sign () (? int) { if len(@"math/big".xÂ·2.@"math/big".abs) == 0x0 { return 0x0 }; if @"math/big".xÂ·2.@"math/big".neg { return -0x1 }; return 0x1 }
+	func (@"math/big".xÂ·2 *@"math/big".Int "esc:0x9") String () (? string)
+	func (@"math/big".zÂ·2 *@"math/big".Int "esc:0x1a") Sub (@"math/big".xÂ·3 *@"math/big".Int "esc:0x9", @"math/big".yÂ·4 *@"math/big".Int "esc:0x9") (? *@"math/big".Int)
+	func (@"math/big".xÂ·2 *@"math/big".Int "esc:0x1") Uint64 () (? uint64) { return @"math/big".low64(@"math/big".xÂ·2.@"math/big".abs) }
+	func (@"math/big".zÂ·2 *@"math/big".Int "esc:0x9") UnmarshalJSON (@"math/big".textÂ·3 []byte) (? error)
+	func (@"math/big".zÂ·2 *@"math/big".Int "esc:0x9") UnmarshalText (@"math/big".textÂ·3 []byte) (? error)
+	func (@"math/big".zÂ·2 *@"math/big".Int "esc:0x1a") Xor (@"math/big".xÂ·3 *@"math/big".Int "esc:0x9", @"math/big".yÂ·4 *@"math/big".Int "esc:0x9") (? *@"math/big".Int)
+	func (@"math/big".zÂ·2 *@"math/big".Int "esc:0x1a") @"math/big".binaryGCD (@"math/big".aÂ·3 *@"math/big".Int "esc:0x9", @"math/big".bÂ·4 *@"math/big".Int "esc:0x9") (? *@"math/big".Int)
+	func (@"math/big".zÂ·4 *@"math/big".Int "esc:0x1a") @"math/big".scan (@"math/big".rÂ·5 @"io".ByteScanner, @"math/big".baseÂ·6 int) (? *@"math/big".Int, ? int, ? error)
+	import pkix "crypto/x509/pkix" // indirect
+	import asn1 "encoding/asn1" // indirect
+	type @"encoding/asn1".ObjectIdentifier []int
+	func (@"encoding/asn1".oiÂ·2 @"encoding/asn1".ObjectIdentifier "esc:0x1") Equal (@"encoding/asn1".otherÂ·3 @"encoding/asn1".ObjectIdentifier "esc:0x1") (? bool)
+	func (@"encoding/asn1".oiÂ·2 @"encoding/asn1".ObjectIdentifier "esc:0x1") String () (? string)
+	type @"crypto/x509/pkix".AttributeTypeAndValue struct { Type @"encoding/asn1".ObjectIdentifier; Value interface {} }
+	type @"crypto/x509/pkix".RelativeDistinguishedNameSET []@"crypto/x509/pkix".AttributeTypeAndValue
+	type @"crypto/x509/pkix".RDNSequence []@"crypto/x509/pkix".RelativeDistinguishedNameSET
+	type @"crypto/x509/pkix".Name struct { Country []string; Organization []string; OrganizationalUnit []string; Locality []string; Province []string; StreetAddress []string; PostalCode []string; SerialNumber string; CommonName string; Names []@"crypto/x509/pkix".AttributeTypeAndValue; ExtraNames []@"crypto/x509/pkix".AttributeTypeAndValue }
+	func (@"crypto/x509/pkix".nÂ·1 *@"crypto/x509/pkix".Name "esc:0x9") FillFromRDNSequence (@"crypto/x509/pkix".rdnsÂ·2 *@"crypto/x509/pkix".RDNSequence "esc:0x9")
+	func (@"crypto/x509/pkix".nÂ·2 @"crypto/x509/pkix".Name) ToRDNSequence () (@"crypto/x509/pkix".retÂ·1 @"crypto/x509/pkix".RDNSequence)
+	func (@"crypto/x509/pkix".nÂ·2 @"crypto/x509/pkix".Name "esc:0x1") @"crypto/x509/pkix".appendRDNs (@"crypto/x509/pkix".inÂ·3 @"crypto/x509/pkix".RDNSequence "esc:0x1a", @"crypto/x509/pkix".valuesÂ·4 []string "esc:0x9", @"crypto/x509/pkix".oidÂ·5 @"encoding/asn1".ObjectIdentifier) (? @"crypto/x509/pkix".RDNSequence)
+	type @"time".zone struct { @"time".name string; @"time".offset int; @"time".isDST bool }
+	type @"time".zoneTrans struct { @"time".when int64; @"time".index uint8; @"time".isstd bool; @"time".isutc bool }
+	type @"time".Location struct { @"time".name string; @"time".zone []@"time".zone; @"time".tx []@"time".zoneTrans; @"time".cacheStart int64; @"time".cacheEnd int64; @"time".cacheZone *@"time".zone }
+	func (@"time".lÂ·2 *@"time".Location "esc:0x22") String () (? string)
+	func (@"time".lÂ·2 *@"time".Location "esc:0x1") @"time".firstZoneUsed () (? bool)
+	func (@"time".lÂ·2 *@"time".Location "esc:0x12") @"time".get () (? *@"time".Location)
+	func (@"time".lÂ·6 *@"time".Location "esc:0x32") @"time".lookup (@"time".secÂ·7 int64) (@"time".nameÂ·1 string, @"time".offsetÂ·2 int, @"time".isDSTÂ·3 bool, @"time".startÂ·4 int64, @"time".endÂ·5 int64)
+	func (@"time".lÂ·2 *@"time".Location "esc:0x1") @"time".lookupFirstZone () (? int)
+	func (@"time".lÂ·4 *@"time".Location "esc:0x1") @"time".lookupName (@"time".nameÂ·5 string "esc:0x1", @"time".unixÂ·6 int64) (@"time".offsetÂ·1 int, @"time".isDSTÂ·2 bool, @"time".okÂ·3 bool)
+	type @"time".Duration int64
+	func (@"time".dÂ·2 @"time".Duration) Hours () (? float64) { var @"time".hourÂ·3 @"time".Duration; ; @"time".hourÂ·3 = @"time".dÂ·2 / @"time".Duration(0x34630b8a000); var @"time".nsecÂ·4 @"time".Duration; ; @"time".nsecÂ·4 = @"time".dÂ·2 % @"time".Duration(0x34630b8a000); return float64(@"time".hourÂ·3) + float64(@"time".nsecÂ·4) * 8190022623310637111963488201822504381538623676021880892417778544696899264837610290203272971060556344039023584360473938041055625214280336402169897364226048p-553 }
+	func (@"time".dÂ·2 @"time".Duration) Minutes () (? float64) { var @"time".minÂ·3 @"time".Duration; ; @"time".minÂ·3 = @"time".dÂ·2 / @"time".Duration(0xdf8475800); var @"time".nsecÂ·4 @"time".Duration; ; @"time".nsecÂ·4 = @"time".dÂ·2 % @"time".Duration(0xdf8475800); return float64(@"time".minÂ·3) + float64(@"time".nsecÂ·4) * 7678146209353722106395056769533233877065564876941352542109479049699919628723768656821910653339403201031675627614471533358284117434246264392176261853609984p-547 }
+	func (@"time".dÂ·2 @"time".Duration) Nanoseconds () (? int64) { return int64(@"time".dÂ·2) }
+	func (@"time".dÂ·2 @"time".Duration) Seconds () (? float64) { var @"time".secÂ·3 @"time".Duration; ; @"time".secÂ·3 = @"time".dÂ·2 / @"time".Duration(0x3b9aca00); var @"time".nsecÂ·4 @"time".Duration; ; @"time".nsecÂ·4 = @"time".dÂ·2 % @"time".Duration(0x3b9aca00); return float64(@"time".secÂ·3) + float64(@"time".nsecÂ·4) * 7198262071269114660816079141112770740375861891461678802759824945047098083990024106014198994535558872472104883612039846078596891298747423852523262413111296p-541 }
+	func (@"time".dÂ·2 @"time".Duration) String () (? string)
+	type @"time".Month int
+	func (@"time".mÂ·2 @"time".Month) String () (? string) { return @"time".months[@"time".mÂ·2 - @"time".Month(0x1)] }
+	type @"time".Weekday int
+	func (@"time".dÂ·2 @"time".Weekday) String () (? string) { return @"time".days[@"time".dÂ·2] }
+	type @"time".Time struct { @"time".sec int64; @"time".nsec int32; @"time".loc *@"time".Location }
+	func (@"time".tÂ·2 @"time".Time "esc:0x12") Add (@"time".dÂ·3 @"time".Duration) (? @"time".Time) { @"time".tÂ·2.@"time".sec += int64(@"time".dÂ·3 / @"time".Duration(0x3b9aca00)); var @"time".nsecÂ·4 int32; ; @"time".nsecÂ·4 = int32(@"time".tÂ·2.@"time".nsec) + int32(@"time".dÂ·3 % @"time".Duration(0x3b9aca00)); if @"time".nsecÂ·4 >= 0x3b9aca00 { @"time".tÂ·2.@"time".sec++; @"time".nsecÂ·4 -= 0x3b9aca00 } else { if @"time".nsecÂ·4 < 0x0 { @"time".tÂ·2.@"time".sec--; @"time".nsecÂ·4 += 0x3b9aca00 } }; @"time".tÂ·2.@"time".nsec = @"time".nsecÂ·4; return @"time".tÂ·2 }
+	func (@"time".tÂ·2 @"time".Time "esc:0x12") AddDate (@"time".yearsÂ·3 int, @"time".monthsÂ·4 int, @"time".daysÂ·5 int) (? @"time".Time)
+	func (@"time".tÂ·2 @"time".Time "esc:0x1") After (@"time".uÂ·3 @"time".Time "esc:0x1") (? bool) { return @"time".tÂ·2.@"time".sec > @"time".uÂ·3.@"time".sec || @"time".tÂ·2.@"time".sec == @"time".uÂ·3.@"time".sec && @"time".tÂ·2.@"time".nsec > @"time".uÂ·3.@"time".nsec }
+	func (@"time".tÂ·2 @"time".Time "esc:0x9") AppendFormat (@"time".bÂ·3 []byte "esc:0x1a", @"time".layoutÂ·4 string "esc:0x9") (? []byte)
+	func (@"time".tÂ·2 @"time".Time "esc:0x1") Before (@"time".uÂ·3 @"time".Time "esc:0x1") (? bool) { return @"time".tÂ·2.@"time".sec < @"time".uÂ·3.@"time".sec || @"time".tÂ·2.@"time".sec == @"time".uÂ·3.@"time".sec && @"time".tÂ·2.@"time".nsec < @"time".uÂ·3.@"time".nsec }
+	func (@"time".tÂ·4 @"time".Time "esc:0x1") Clock () (@"time".hourÂ·1 int, @"time".minÂ·2 int, @"time".secÂ·3 int)
+	func (@"time".tÂ·4 @"time".Time "esc:0x1") Date () (@"time".yearÂ·1 int, @"time".monthÂ·2 @"time".Month, @"time".dayÂ·3 int)
+	func (@"time".tÂ·2 @"time".Time "esc:0x1") Day () (? int)
+	func (@"time".tÂ·2 @"time".Time "esc:0x1") Equal (@"time".uÂ·3 @"time".Time "esc:0x1") (? bool) { return @"time".tÂ·2.@"time".sec == @"time".uÂ·3.@"time".sec && @"time".tÂ·2.@"time".nsec == @"time".uÂ·3.@"time".nsec }
+	func (@"time".tÂ·2 @"time".Time "esc:0x9") Format (@"time".layoutÂ·3 string "esc:0x9") (? string)
+	func (@"time".tÂ·2 *@"time".Time "esc:0x1") GobDecode (@"time".dataÂ·3 []byte "esc:0x1") (? error)
+	func (@"time".tÂ·3 @"time".Time "esc:0x1") GobEncode () (? []byte, ? error)
+	func (@"time".tÂ·2 @"time".Time "esc:0x1") Hour () (? int)
+	func (@"time".tÂ·3 @"time".Time "esc:0x1") ISOWeek () (@"time".yearÂ·1 int, @"time".weekÂ·2 int)
+	func (@"time".tÂ·2 @"time".Time "esc:0x12") In (@"time".locÂ·3 *@"time".Location "esc:0x12") (? @"time".Time)
+	func (@"time".tÂ·2 @"time".Time "esc:0x1") IsZero () (? bool) { return @"time".tÂ·2.@"time".sec == 0x0 && @"time".tÂ·2.@"time".nsec == 0x0 }
+	func (@"time".tÂ·2 @"time".Time "esc:0x12") Local () (? @"time".Time) { @"time".tÂ·2.@"time".loc = @"time".Local; return @"time".tÂ·2 }
+	func (@"time".tÂ·2 @"time".Time "esc:0x12") Location () (? *@"time".Location) { var @"time".lÂ·3 *@"time".Location; ; @"time".lÂ·3 = @"time".tÂ·2.@"time".loc; if @"time".lÂ·3 == nil { @"time".lÂ·3 = @"time".UTC }; return @"time".lÂ·3 }
+	func (@"time".tÂ·3 @"time".Time "esc:0x1") MarshalBinary () (? []byte, ? error)
+	func (@"time".tÂ·3 @"time".Time "esc:0x9") MarshalJSON () (? []byte, ? error)
+	func (@"time".tÂ·3 @"time".Time "esc:0x9") MarshalText () (? []byte, ? error)
+	func (@"time".tÂ·2 @"time".Time "esc:0x1") Minute () (? int)
+	func (@"time".tÂ·2 @"time".Time "esc:0x1") Month () (? @"time".Month)
+	func (@"time".tÂ·2 @"time".Time "esc:0x1") Nanosecond () (? int) { return int(@"time".tÂ·2.@"time".nsec) }
+	func (@"time".tÂ·2 @"time".Time "esc:0x12") Round (@"time".dÂ·3 @"time".Duration) (? @"time".Time)
+	func (@"time".tÂ·2 @"time".Time "esc:0x1") Second () (? int)
+	func (@"time".tÂ·2 @"time".Time "esc:0x9") String () (? string)
+	func (@"time".tÂ·2 @"time".Time "esc:0x1") Sub (@"time".uÂ·3 @"time".Time "esc:0x1") (? @"time".Duration)
+	func (@"time".tÂ·2 @"time".Time "esc:0x12") Truncate (@"time".dÂ·3 @"time".Duration) (? @"time".Time)
+	func (@"time".tÂ·2 @"time".Time "esc:0x12") UTC () (? @"time".Time) { @"time".tÂ·2.@"time".loc = @"time".UTC; return @"time".tÂ·2 }
+	func (@"time".tÂ·2 @"time".Time "esc:0x1") Unix () (? int64) { return @"time".tÂ·2.@"time".sec + -0xe7791f700 }
+	func (@"time".tÂ·2 @"time".Time "esc:0x1") UnixNano () (? int64) { return (@"time".tÂ·2.@"time".sec + -0xe7791f700) * 0x3b9aca00 + int64(@"time".tÂ·2.@"time".nsec) }
+	func (@"time".tÂ·2 *@"time".Time "esc:0x1") UnmarshalBinary (@"time".dataÂ·3 []byte "esc:0x1") (? error)
+	func (@"time".tÂ·2 *@"time".Time "esc:0x1") UnmarshalJSON (@"time".dataÂ·3 []byte "esc:0x1") (@"time".errÂ·1 error)
+	func (@"time".tÂ·2 *@"time".Time "esc:0x1") UnmarshalText (@"time".dataÂ·3 []byte "esc:0x1") (@"time".errÂ·1 error)
+	func (@"time".tÂ·2 @"time".Time "esc:0x1") Weekday () (? @"time".Weekday)
+	func (@"time".tÂ·2 @"time".Time "esc:0x1") Year () (? int)
+	func (@"time".tÂ·2 @"time".Time "esc:0x1") YearDay () (? int)
+	func (@"time".tÂ·3 @"time".Time "esc:0x32") Zone () (@"time".nameÂ·1 string, @"time".offsetÂ·2 int)
+	func (@"time".tÂ·2 @"time".Time "esc:0x1") @"time".abs () (? uint64)
+	func (@"time".tÂ·5 @"time".Time "esc:0x1") @"time".date (@"time".fullÂ·6 bool) (@"time".yearÂ·1 int, @"time".monthÂ·2 @"time".Month, @"time".dayÂ·3 int, @"time".ydayÂ·4 int)
+	func (@"time".tÂ·4 @"time".Time "esc:0x32") @"time".locabs () (@"time".nameÂ·1 string, @"time".offsetÂ·2 int, @"time".absÂ·3 uint64)
+	type @"crypto/x509".KeyUsage int
+	type @"crypto/x509/pkix".Extension struct { Id @"encoding/asn1".ObjectIdentifier; Critical bool "asn1:\"optional\""; Value []byte }
+	type @"crypto/x509".ExtKeyUsage int
+	import net "net" // indirect
+	type @"net".IPMask []byte
+	func (@"net".mÂ·3 @"net".IPMask "esc:0x1") Size () (@"net".onesÂ·1 int, @"net".bitsÂ·2 int)
+	func (@"net".mÂ·2 @"net".IPMask "esc:0x1") String () (? string)
+	type @"net".IP []byte
+	func (@"net".ipÂ·2 @"net".IP "esc:0x1") DefaultMask () (? @"net".IPMask)
+	func (@"net".ipÂ·2 @"net".IP "esc:0x1") Equal (@"net".xÂ·3 @"net".IP "esc:0x1") (? bool)
+	func (@"net".ipÂ·2 @"net".IP "esc:0x1") IsGlobalUnicast () (? bool)
+	func (@"net".ipÂ·2 @"net".IP "esc:0x1") IsInterfaceLocalMulticast () (? bool) { return len(@"net".ipÂ·2) == 0x10 && @"net".ipÂ·2[0x0] == byte(0xff) && @"net".ipÂ·2[0x1] & byte(0xf) == byte(0x1) }
+	func (@"net".ipÂ·2 @"net".IP "esc:0x1") IsLinkLocalMulticast () (? bool)
+	func (@"net".ipÂ·2 @"net".IP "esc:0x1") IsLinkLocalUnicast () (? bool)
+	func (@"net".ipÂ·2 @"net".IP "esc:0x1") IsLoopback () (? bool)
+	func (@"net".ipÂ·2 @"net".IP "esc:0x1") IsMulticast () (? bool)
+	func (@"net".ipÂ·2 @"net".IP "esc:0x1") IsUnspecified () (? bool)
+	func (@"net".ipÂ·3 @"net".IP "esc:0x1") MarshalText () (? []byte, ? error)
+	func (@"net".ipÂ·2 @"net".IP "esc:0x1") Mask (@"net".maskÂ·3 @"net".IPMask "esc:0x1") (? @"net".IP)
+	func (@"net".ipÂ·2 @"net".IP "esc:0x1") String () (? string)
+	func (@"net".ipÂ·2 @"net".IP "esc:0x12") To16 () (? @"net".IP) { if len(@"net".ipÂ·2) == 0x4 { return @"net".IPv4(@"net".ipÂ·2[0x0], @"net".ipÂ·2[0x1], @"net".ipÂ·2[0x2], @"net".ipÂ·2[0x3]) }; if len(@"net".ipÂ·2) == 0x10 { return @"net".ipÂ·2 }; return nil }
+	func (@"net".ipÂ·2 @"net".IP "esc:0x12") To4 () (? @"net".IP)
+	func (@"net".ipÂ·2 *@"net".IP "esc:0x1") UnmarshalText (@"net".textÂ·3 []byte "esc:0x1") (? error)
+	type @"encoding/asn1".RawContent []byte
+	type @"encoding/asn1".RawValue struct { Class int; Tag int; IsCompound bool; Bytes []byte; FullBytes []byte }
+	type @"crypto/x509/pkix".AlgorithmIdentifier struct { Algorithm @"encoding/asn1".ObjectIdentifier; Parameters @"encoding/asn1".RawValue "asn1:\"optional\"" }
+	type @"crypto/x509/pkix".RevokedCertificate struct { SerialNumber *@"math/big".Int; RevocationTime @"time".Time; Extensions []@"crypto/x509/pkix".Extension "asn1:\"optional\"" }
+	type @"crypto/x509/pkix".TBSCertificateList struct { Raw @"encoding/asn1".RawContent; Version int "asn1:\"optional,default:1\""; Signature @"crypto/x509/pkix".AlgorithmIdentifier; Issuer @"crypto/x509/pkix".RDNSequence; ThisUpdate @"time".Time; NextUpdate @"time".Time "asn1:\"optional\""; RevokedCertificates []@"crypto/x509/pkix".RevokedCertificate "asn1:\"optional\""; Extensions []@"crypto/x509/pkix".Extension "asn1:\"tag:0,optional,explicit\"" }
+	type @"encoding/asn1".BitString struct { Bytes []byte; BitLength int }
+	func (@"encoding/asn1".bÂ·2 @"encoding/asn1".BitString "esc:0x1") At (@"encoding/asn1".iÂ·3 int) (? int) { if @"encoding/asn1".iÂ·3 < 0x0 || @"encoding/asn1".iÂ·3 >= @"encoding/asn1".bÂ·2.BitLength { return 0x0 }; var @"encoding/asn1".xÂ·4 int; ; @"encoding/asn1".xÂ·4 = @"encoding/asn1".iÂ·3 / 0x8; var @"encoding/asn1".yÂ·5 uint; ; @"encoding/asn1".yÂ·5 = 0x7 - uint(@"encoding/asn1".iÂ·3 % 0x8); return int(@"encoding/asn1".bÂ·2.Bytes[@"encoding/asn1".xÂ·4] >> @"encoding/asn1".yÂ·5) & 0x1 }
+	func (@"encoding/asn1".bÂ·2 @"encoding/asn1".BitString "esc:0x12") RightAlign () (? []byte)
+	type @"crypto/x509/pkix".CertificateList struct { TBSCertList @"crypto/x509/pkix".TBSCertificateList; SignatureAlgorithm @"crypto/x509/pkix".AlgorithmIdentifier; SignatureValue @"encoding/asn1".BitString }
+	func (@"crypto/x509/pkix".certListÂ·2 *@"crypto/x509/pkix".CertificateList "esc:0x1") HasExpired (@"crypto/x509/pkix".nowÂ·3 @"time".Time "esc:0x1") (? bool) { return @"crypto/x509/pkix".nowÂ·3.After(@"crypto/x509/pkix".certListÂ·2.TBSCertList.NextUpdate) }
+	type @"io".Reader interface { Read(@"io".p []byte) (@"io".n int, @"io".err error) }
+	type @"crypto/x509".CertPool struct { @"crypto/x509".bySubjectKeyId map[string][]int; @"crypto/x509".byName map[string][]int; @"crypto/x509".certs []*@"crypto/x509".Certificate }
+	func (@"crypto/x509".sÂ·1 *@"crypto/x509".CertPool "esc:0x9") AddCert (@"crypto/x509".certÂ·2 *@"crypto/x509".Certificate)
+	func (@"crypto/x509".sÂ·2 *@"crypto/x509".CertPool "esc:0x9") AppendCertsFromPEM (@"crypto/x509".pemCertsÂ·3 []byte) (@"crypto/x509".okÂ·1 bool)
+	func (@"crypto/x509".sÂ·2 *@"crypto/x509".CertPool "esc:0x9") Subjects () (@"crypto/x509".resÂ·1 [][]byte)
+	func (@"crypto/x509".sÂ·4 *@"crypto/x509".CertPool "esc:0x18a") @"crypto/x509".findVerifiedParents (@"crypto/x509".certÂ·5 *@"crypto/x509".Certificate "esc:0x9") (@"crypto/x509".parentsÂ·1 []int, @"crypto/x509".errCertÂ·2 *@"crypto/x509".Certificate, @"crypto/x509".errÂ·3 error)
+	type @"crypto/x509".VerifyOptions struct { DNSName string; Intermediates *@"crypto/x509".CertPool; Roots *@"crypto/x509".CertPool; CurrentTime @"time".Time; KeyUsages []@"crypto/x509".ExtKeyUsage }
+	type @"crypto/x509".Certificate struct { Raw []byte; RawTBSCertificate []byte; RawSubjectPublicKeyInfo []byte; RawSubject []byte; RawIssuer []byte; Signature []byte; SignatureAlgorithm @"crypto/x509".SignatureAlgorithm; PublicKeyAlgorithm @"crypto/x509".PublicKeyAlgorithm; PublicKey interface {}; Version int; SerialNumber *@"math/big".Int; Issuer @"crypto/x509/pkix".Name; Subject @"crypto/x509/pkix".Name; NotBefore @"time".Time; NotAfter @"time".Time; KeyUsage @"crypto/x509".KeyUsage; Extensions []@"crypto/x509/pkix".Extension; ExtraExtensions []@"crypto/x509/pkix".Extension; UnhandledCriticalExtensions []@"encoding/asn1".ObjectIdentifier; ExtKeyUsage []@"crypto/x509".ExtKeyUsage; UnknownExtKeyUsage []@"encoding/asn1".ObjectIdentifier; BasicConstraintsValid bool; IsCA bool; MaxPathLen int; MaxPathLenZero bool; SubjectKeyId []byte; AuthorityKeyId []byte; OCSPServer []string; IssuingCertificateURL []string; DNSNames []string; EmailAddresses []string; IPAddresses []@"net".IP; PermittedDNSDomainsCritical bool; PermittedDNSDomains []string; CRLDistributionPoints []string; PolicyIdentifiers []@"encoding/asn1".ObjectIdentifier }
+	func (@"crypto/x509".cÂ·2 *@"crypto/x509".Certificate "esc:0x9") CheckCRLSignature (@"crypto/x509".crlÂ·3 *@"crypto/x509/pkix".CertificateList "esc:0x9") (@"crypto/x509".errÂ·1 error)
+	func (@"crypto/x509".cÂ·2 *@"crypto/x509".Certificate "esc:0x9") CheckSignature (@"crypto/x509".algoÂ·3 @"crypto/x509".SignatureAlgorithm, @"crypto/x509".signedÂ·4 []byte, @"crypto/x509".signatureÂ·5 []byte) (@"crypto/x509".errÂ·1 error)
+	func (@"crypto/x509".cÂ·2 *@"crypto/x509".Certificate "esc:0x9") CheckSignatureFrom (@"crypto/x509".parentÂ·3 *@"crypto/x509".Certificate "esc:0x9") (@"crypto/x509".errÂ·1 error)
+	func (@"crypto/x509".cÂ·3 *@"crypto/x509".Certificate "esc:0x9") CreateCRL (@"crypto/x509".randÂ·4 @"io".Reader, @"crypto/x509".privÂ·5 interface {}, @"crypto/x509".revokedCertsÂ·6 []@"crypto/x509/pkix".RevokedCertificate, @"crypto/x509".nowÂ·7 @"time".Time, @"crypto/x509".expiryÂ·8 @"time".Time) (@"crypto/x509".crlBytesÂ·1 []byte, @"crypto/x509".errÂ·2 error)
+	func (@"crypto/x509".cÂ·2 *@"crypto/x509".Certificate "esc:0x1") Equal (@"crypto/x509".otherÂ·3 *@"crypto/x509".Certificate "esc:0x1") (? bool)
+	func (@"crypto/x509".cÂ·3 *@"crypto/x509".Certificate) Verify (@"crypto/x509".optsÂ·4 @"crypto/x509".VerifyOptions) (@"crypto/x509".chainsÂ·1 [][]*@"crypto/x509".Certificate, @"crypto/x509".errÂ·2 error)
+	func (@"crypto/x509".cÂ·2 *@"crypto/x509".Certificate "esc:0x1a") VerifyHostname (@"crypto/x509".hÂ·3 string) (? error)
+	func (@"crypto/x509".cÂ·3 *@"crypto/x509".Certificate) @"crypto/x509".buildChains (@"crypto/x509".cacheÂ·4 map[int][][]*@"crypto/x509".Certificate "esc:0x1", @"crypto/x509".currentChainÂ·5 []*@"crypto/x509".Certificate "esc:0x9", @"crypto/x509".optsÂ·6 *@"crypto/x509".VerifyOptions "esc:0x20a") (@"crypto/x509".chainsÂ·1 [][]*@"crypto/x509".Certificate, @"crypto/x509".errÂ·2 error)
+	func (@"crypto/x509".cÂ·2 *@"crypto/x509".Certificate "esc:0x12") @"crypto/x509".isValid (@"crypto/x509".certTypeÂ·3 int, @"crypto/x509".currentChainÂ·4 []*@"crypto/x509".Certificate "esc:0x1", @"crypto/x509".optsÂ·5 *@"crypto/x509".VerifyOptions "esc:0x1") (? error)
+	func (@"crypto/x509".cÂ·3 *@"crypto/x509".Certificate "esc:0x1") @"crypto/x509".systemVerify (@"crypto/x509".optsÂ·4 *@"crypto/x509".VerifyOptions "esc:0x1") (@"crypto/x509".chainsÂ·1 [][]*@"crypto/x509".Certificate, @"crypto/x509".errÂ·2 error) { return nil, nil }
+	type @"crypto/tls".ConnectionState struct { Version uint16; HandshakeComplete bool; DidResume bool; CipherSuite uint16; NegotiatedProtocol string; NegotiatedProtocolIsMutual bool; ServerName string; PeerCertificates []*@"crypto/x509".Certificate; VerifiedChains [][]*@"crypto/x509".Certificate; SignedCertificateTimestamps [][]byte; OCSPResponse []byte; TLSUnique []byte }
+	type @"net/http".Cookie struct { Name string; Value string; Path string; Domain string; Expires @"time".Time; RawExpires string; MaxAge int; Secure bool; HttpOnly bool; Raw string; Unparsed []string }
+	func (@"net/http".cÂ·2 *@"net/http".Cookie "esc:0x9") String () (? string)
+	import bufio "bufio" // indirect
+	type @"bufio".Reader struct { @"bufio".buf []byte; @"bufio".rd @"io".Reader; @"bufio".r int; @"bufio".w int; @"bufio".err error; @"bufio".lastByte int; @"bufio".lastRuneSize int }
+	func (@"bufio".bÂ·2 *@"bufio".Reader "esc:0x1") Buffered () (? int) { return @"bufio".bÂ·2.@"bufio".w - @"bufio".bÂ·2.@"bufio".r }
+	func (@"bufio".bÂ·3 *@"bufio".Reader "esc:0x10a") Discard (@"bufio".nÂ·4 int) (@"bufio".discardedÂ·1 int, @"bufio".errÂ·2 error)
+	func (@"bufio".bÂ·3 *@"bufio".Reader "esc:0x12a") Peek (@"bufio".nÂ·4 int) (? []byte, ? error)
+	func (@"bufio".bÂ·3 *@"bufio".Reader "esc:0x10a") Read (@"bufio".pÂ·4 []byte) (@"bufio".nÂ·1 int, @"bufio".errÂ·2 error)
+	func (@"bufio".bÂ·3 *@"bufio".Reader "esc:0x10a") ReadByte () (@"bufio".cÂ·1 byte, @"bufio".errÂ·2 error)
+	func (@"bufio".bÂ·3 *@"bufio".Reader "esc:0x10a") ReadBytes (@"bufio".delimÂ·4 byte) (@"bufio".lineÂ·1 []byte, @"bufio".errÂ·2 error)
+	func (@"bufio".bÂ·4 *@"bufio".Reader "esc:0x82a") ReadLine () (@"bufio".lineÂ·1 []byte, @"bufio".isPrefixÂ·2 bool, @"bufio".errÂ·3 error)
+	func (@"bufio".bÂ·4 *@"bufio".Reader "esc:0x80a") ReadRune () (@"bufio".rÂ·1 rune, @"bufio".sizeÂ·2 int, @"bufio".errÂ·3 error)
+	func (@"bufio".bÂ·3 *@"bufio".Reader "esc:0x12a") ReadSlice (@"bufio".delimÂ·4 byte) (@"bufio".lineÂ·1 []byte, @"bufio".errÂ·2 error)
+	func (@"bufio".bÂ·3 *@"bufio".Reader "esc:0x10a") ReadString (@"bufio".delimÂ·4 byte) (@"bufio".lineÂ·1 string, @"bufio".errÂ·2 error)
+	func (@"bufio".bÂ·1 *@"bufio".Reader "esc:0x9") Reset (@"bufio".rÂ·2 @"io".Reader) { @"bufio".bÂ·1.@"bufio".reset(@"bufio".bÂ·1.@"bufio".buf, @"bufio".rÂ·2) }
+	func (@"bufio".bÂ·2 *@"bufio".Reader "esc:0x1") UnreadByte () (? error) { if @"bufio".bÂ·2.@"bufio".lastByte < 0x0 || @"bufio".bÂ·2.@"bufio".r == 0x0 && @"bufio".bÂ·2.@"bufio".w > 0x0 { return @"bufio".ErrInvalidUnreadByte }; if @"bufio".bÂ·2.@"bufio".r > 0x0 { @"bufio".bÂ·2.@"bufio".r-- } else { @"bufio".bÂ·2.@"bufio".w = 0x1 }; @"bufio".bÂ·2.@"bufio".buf[@"bufio".bÂ·2.@"bufio".r] = byte(@"bufio".bÂ·2.@"bufio".lastByte); @"bufio".bÂ·2.@"bufio".lastByte = -0x1; @"bufio".bÂ·2.@"bufio".lastRuneSize = -0x1; return nil }
+	func (@"bufio".bÂ·2 *@"bufio".Reader "esc:0x1") UnreadRune () (? error) { if @"bufio".bÂ·2.@"bufio".lastRuneSize < 0x0 || @"bufio".bÂ·2.@"bufio".r < @"bufio".bÂ·2.@"bufio".lastRuneSize { return @"bufio".ErrInvalidUnreadRune }; @"bufio".bÂ·2.@"bufio".r -= @"bufio".bÂ·2.@"bufio".lastRuneSize; @"bufio".bÂ·2.@"bufio".lastByte = -0x1; @"bufio".bÂ·2.@"bufio".lastRuneSize = -0x1; return nil }
+	func (@"bufio".bÂ·3 *@"bufio".Reader "esc:0x10a") WriteTo (@"bufio".wÂ·4 @"io".Writer) (@"bufio".nÂ·1 int64, @"bufio".errÂ·2 error)
+	func (@"bufio".bÂ·1 *@"bufio".Reader "esc:0x9") @"bufio".fill ()
+	func (@"bufio".bÂ·2 *@"bufio".Reader "esc:0x22") @"bufio".readErr () (? error) { var @"bufio".errÂ·3 error; ; @"bufio".errÂ·3 = @"bufio".bÂ·2.@"bufio".err; @"bufio".bÂ·2.@"bufio".err = nil; return @"bufio".errÂ·3 }
+	func (@"bufio".bÂ·1 *@"bufio".Reader "esc:0x1") @"bufio".reset (@"bufio".bufÂ·2 []byte, @"bufio".rÂ·3 @"io".Reader) { *@"bufio".bÂ·1 = (@"bufio".Reader{ @"bufio".buf:@"bufio".bufÂ·2, @"bufio".rd:@"bufio".rÂ·3, @"bufio".lastByte:-0x1, @"bufio".lastRuneSize:-0x1 }) }
+	func (@"bufio".bÂ·3 *@"bufio".Reader "esc:0x9") @"bufio".writeBuf (@"bufio".wÂ·4 @"io".Writer) (? int64, ? error)
+	type @"bytes".readOp int
+	type @"bytes".Buffer struct { @"bytes".buf []byte; @"bytes".off int; @"bytes".runeBytes [4]byte; @"bytes".bootstrap [64]byte; @"bytes".lastRead @"bytes".readOp }
+	func (@"bytes".bÂ·2 *@"bytes".Buffer "esc:0x22") Bytes () (? []byte) { return @"bytes".bÂ·2.@"bytes".buf[@"bytes".bÂ·2.@"bytes".off:] }
+	func (@"bytes".bÂ·2 *@"bytes".Buffer "esc:0x1") Cap () (? int) { return cap(@"bytes".bÂ·2.@"bytes".buf) }
+	func (@"bytes".bÂ·1 *@"bytes".Buffer) Grow (@"bytes".nÂ·2 int)
+	func (@"bytes".bÂ·2 *@"bytes".Buffer "esc:0x1") Len () (? int) { return len(@"bytes".bÂ·2.@"bytes".buf) - @"bytes".bÂ·2.@"bytes".off }
+	func (@"bytes".bÂ·2 *@"bytes".Buffer "esc:0x22") Next (@"bytes".nÂ·3 int) (? []byte) { @"bytes".bÂ·2.@"bytes".lastRead = @"bytes".readOp(0x0); var @"bytes".mÂ·4 int; ; @"bytes".mÂ·4 = @"bytes".bÂ·2.Len(); if @"bytes".nÂ·3 > @"bytes".mÂ·4 { @"bytes".nÂ·3 = @"bytes".mÂ·4 }; var @"bytes".dataÂ·5 []byte; ; @"bytes".dataÂ·5 = @"bytes".bÂ·2.@"bytes".buf[@"bytes".bÂ·2.@"bytes".off:@"bytes".bÂ·2.@"bytes".off + @"bytes".nÂ·3]; @"bytes".bÂ·2.@"bytes".off += @"bytes".nÂ·3; if @"bytes".nÂ·3 > 0x0 { @"bytes".bÂ·2.@"bytes".lastRead = @"bytes".readOp(0x2) }; return @"bytes".dataÂ·5 }
+	func (@"bytes".bÂ·3 *@"bytes".Buffer "esc:0x9") Read (@"bytes".pÂ·4 []byte "esc:0x1") (@"bytes".nÂ·1 int, @"bytes".errÂ·2 error)
+	func (@"bytes".bÂ·3 *@"bytes".Buffer "esc:0x1") ReadByte () (@"bytes".cÂ·1 byte, @"bytes".errÂ·2 error)
+	func (@"bytes".bÂ·3 *@"bytes".Buffer "esc:0x9") ReadBytes (@"bytes".delimÂ·4 byte) (@"bytes".lineÂ·1 []byte, @"bytes".errÂ·2 error)
+	func (@"bytes".bÂ·3 *@"bytes".Buffer "esc:0x9") ReadFrom (@"bytes".rÂ·4 @"io".Reader) (@"bytes".nÂ·1 int64, @"bytes".errÂ·2 error)
+	func (@"bytes".bÂ·4 *@"bytes".Buffer "esc:0x1") ReadRune () (@"bytes".rÂ·1 rune, @"bytes".sizeÂ·2 int, @"bytes".errÂ·3 error)
+	func (@"bytes".bÂ·3 *@"bytes".Buffer "esc:0x1") ReadString (@"bytes".delimÂ·4 byte) (@"bytes".lineÂ·1 string, @"bytes".errÂ·2 error)
+	func (@"bytes".bÂ·1 *@"bytes".Buffer "esc:0x1") Reset ()
+	func (@"bytes".bÂ·2 *@"bytes".Buffer "esc:0x1") String () (? string) { if @"bytes".bÂ·2 == nil { return "<nil>" }; return string(@"bytes".bÂ·2.@"bytes".buf[@"bytes".bÂ·2.@"bytes".off:]) }
+	func (@"bytes".bÂ·1 *@"bytes".Buffer "esc:0x1") Truncate (@"bytes".nÂ·2 int)
+	func (@"bytes".bÂ·2 *@"bytes".Buffer "esc:0x1") UnreadByte () (? error) { if @"bytes".bÂ·2.@"bytes".lastRead != @"bytes".readOp(0x1) && @"bytes".bÂ·2.@"bytes".lastRead != @"bytes".readOp(0x2) { return @"errors".New("bytes.Buffer: UnreadByte: previous operation was not a read") }; @"bytes".bÂ·2.@"bytes".lastRead = @"bytes".readOp(0x0); if @"bytes".bÂ·2.@"bytes".off > 0x0 { @"bytes".bÂ·2.@"bytes".off-- }; return nil }
+	func (@"bytes".bÂ·2 *@"bytes".Buffer "esc:0x1") UnreadRune () (? error)
+	func (@"bytes".bÂ·3 *@"bytes".Buffer) Write (@"bytes".pÂ·4 []byte "esc:0x9") (@"bytes".nÂ·1 int, @"bytes".errÂ·2 error)
+	func (@"bytes".bÂ·2 *@"bytes".Buffer) WriteByte (@"bytes".cÂ·3 byte) (? error)
+	func (@"bytes".bÂ·3 *@"bytes".Buffer) WriteRune (@"bytes".rÂ·4 rune) (@"bytes".nÂ·1 int, @"bytes".errÂ·2 error)
+	func (@"bytes".bÂ·3 *@"bytes".Buffer) WriteString (@"bytes".sÂ·4 string "esc:0x9") (@"bytes".nÂ·1 int, @"bytes".errÂ·2 error)
+	func (@"bytes".bÂ·3 *@"bytes".Buffer "esc:0x9") WriteTo (@"bytes".wÂ·4 @"io".Writer) (@"bytes".nÂ·1 int64, @"bytes".errÂ·2 error)
+	func (@"bytes".bÂ·2 *@"bytes".Buffer) @"bytes".grow (@"bytes".nÂ·3 int) (? int)
+	func (@"bytes".bÂ·3 *@"bytes".Buffer "esc:0x22") @"bytes".readSlice (@"bytes".delimÂ·4 byte) (@"bytes".lineÂ·1 []byte, @"bytes".errÂ·2 error)
+	type @"mime/multipart".Part struct { Header @"net/textproto".MIMEHeader; @"mime/multipart".buffer *@"bytes".Buffer; @"mime/multipart".mr *@"mime/multipart".Reader; @"mime/multipart".bytesRead int; @"mime/multipart".disposition string; @"mime/multipart".dispositionParams map[string]string; @"mime/multipart".r @"io".Reader }
+	func (@"mime/multipart".pÂ·2 *@"mime/multipart".Part) Close () (? error)
+	func (@"mime/multipart".pÂ·2 *@"mime/multipart".Part "esc:0x1") FileName () (? string)
+	func (@"mime/multipart".pÂ·2 *@"mime/multipart".Part "esc:0x1") FormName () (? string)
+	func (@"mime/multipart".pÂ·3 *@"mime/multipart".Part "esc:0x9") Read (@"mime/multipart".dÂ·4 []byte) (@"mime/multipart".nÂ·1 int, @"mime/multipart".errÂ·2 error)
+	func (@"mime/multipart".pÂ·1 *@"mime/multipart".Part "esc:0x1") @"mime/multipart".parseContentDisposition ()
+	func (@"mime/multipart".bpÂ·2 *@"mime/multipart".Part "esc:0x4a") @"mime/multipart".populateHeaders () (? error)
+	type @"mime/multipart".Reader struct { @"mime/multipart".bufReader *@"bufio".Reader; @"mime/multipart".currentPart *@"mime/multipart".Part; @"mime/multipart".partsRead int; @"mime/multipart".nl []byte; @"mime/multipart".nlDashBoundary []byte; @"mime/multipart".dashBoundaryDash []byte; @"mime/multipart".dashBoundary []byte }
+	func (@"mime/multipart".rÂ·3 *@"mime/multipart".Reader) NextPart () (? *@"mime/multipart".Part, ? error)
+	func (@"mime/multipart".rÂ·3 *@"mime/multipart".Reader) ReadForm (@"mime/multipart".maxMemoryÂ·4 int64) (@"mime/multipart".fÂ·1 *@"mime/multipart".Form, @"mime/multipart".errÂ·2 error)
+	func (@"mime/multipart".mrÂ·2 *@"mime/multipart".Reader "esc:0x1") @"mime/multipart".isBoundaryDelimiterLine (@"mime/multipart".lineÂ·3 []byte "esc:0x1") (@"mime/multipart".retÂ·1 bool)
+	func (@"mime/multipart".mrÂ·2 *@"mime/multipart".Reader "esc:0x1") @"mime/multipart".isFinalBoundary (@"mime/multipart".lineÂ·3 []byte "esc:0x1") (? bool)
+	func (@"mime/multipart".mrÂ·2 *@"mime/multipart".Reader "esc:0x1") @"mime/multipart".peekBufferIsEmptyPart (@"mime/multipart".peekÂ·3 []byte "esc:0x1") (? bool)
+	func (@"mime/multipart".mrÂ·3 *@"mime/multipart".Reader "esc:0x1") @"mime/multipart".peekBufferSeparatorIndex (@"mime/multipart".peekÂ·4 []byte "esc:0x1") (@"mime/multipart".idxÂ·1 int, @"mime/multipart".isEndÂ·2 bool)
+	type @"net/http".Request struct { Method string; URL *@"net/url".URL; Proto string; ProtoMajor int; ProtoMinor int; Header @"net/http".Header; Body @"io".ReadCloser; ContentLength int64; TransferEncoding []string; Close bool; Host string; Form @"net/url".Values; PostForm @"net/url".Values; MultipartForm *@"mime/multipart".Form; Trailer @"net/http".Header; RemoteAddr string; RequestURI string; TLS *@"crypto/tls".ConnectionState; Cancel <-chan struct {} }
+	func (@"net/http".rÂ·1 *@"net/http".Request "esc:0x1") AddCookie (@"net/http".cÂ·2 *@"net/http".Cookie "esc:0x9")
+	func (@"net/http".rÂ·4 *@"net/http".Request "esc:0x1") BasicAuth () (@"net/http".usernameÂ·1 string, @"net/http".passwordÂ·2 string, @"net/http".okÂ·3 bool)
+	func (@"net/http".rÂ·3 *@"net/http".Request "esc:0x1") Cookie (@"net/http".nameÂ·4 string "esc:0x1") (? *@"net/http".Cookie, ? error)
+	func (@"net/http".rÂ·2 *@"net/http".Request "esc:0x1") Cookies () (? []*@"net/http".Cookie)
+	func (@"net/http".rÂ·4 *@"net/http".Request "esc:0x9") FormFile (@"net/http".keyÂ·5 string "esc:0x1") (? @"mime/multipart".File, ? *@"mime/multipart".FileHeader, ? error)
+	func (@"net/http".rÂ·2 *@"net/http".Request "esc:0x9") FormValue (@"net/http".keyÂ·3 string "esc:0x1") (? string)
+	func (@"net/http".rÂ·3 *@"net/http".Request "esc:0x9") MultipartReader () (? *@"mime/multipart".Reader, ? error)
+	func (@"net/http".rÂ·2 *@"net/http".Request "esc:0x9") ParseForm () (? error)
+	func (@"net/http".rÂ·2 *@"net/http".Request "esc:0x9") ParseMultipartForm (@"net/http".maxMemoryÂ·3 int64) (? error)
+	func (@"net/http".rÂ·2 *@"net/http".Request "esc:0x9") PostFormValue (@"net/http".keyÂ·3 string "esc:0x1") (? string)
+	func (@"net/http".rÂ·2 *@"net/http".Request "esc:0x1") ProtoAtLeast (@"net/http".majorÂ·3 int, @"net/http".minorÂ·4 int) (? bool) { return @"net/http".rÂ·2.ProtoMajor > @"net/http".majorÂ·3 || @"net/http".rÂ·2.ProtoMajor == @"net/http".majorÂ·3 && @"net/http".rÂ·2.ProtoMinor >= @"net/http".minorÂ·4 }
+	func (@"net/http".rÂ·2 *@"net/http".Request "esc:0x1") Referer () (? string)
+	func (@"net/http".rÂ·1 *@"net/http".Request "esc:0x1") SetBasicAuth (@"net/http".usernameÂ·2 string "esc:0x1", @"net/http".passwordÂ·3 string "esc:0x1")
+	func (@"net/http".rÂ·2 *@"net/http".Request "esc:0x1") UserAgent () (? string)
+	func (@"net/http".rÂ·2 *@"net/http".Request "esc:0x9") Write (@"net/http".wÂ·3 @"io".Writer) (? error)
+	func (@"net/http".rÂ·2 *@"net/http".Request "esc:0x9") WriteProxy (@"net/http".wÂ·3 @"io".Writer) (? error)
+	func (@"net/http".rÂ·1 *@"net/http".Request "esc:0x9") @"net/http".closeBody ()
+	func (@"net/http".rÂ·2 *@"net/http".Request "esc:0x1") @"net/http".expectsContinue () (? bool)
+	func (@"net/http".rÂ·3 *@"net/http".Request "esc:0xa") @"net/http".multipartReader () (? *@"mime/multipart".Reader, ? error)
+	func (@"net/http".rÂ·2 *@"net/http".Request "esc:0x1") @"net/http".wantsClose () (? bool)
+	func (@"net/http".rÂ·2 *@"net/http".Request "esc:0x1") @"net/http".wantsHttp10KeepAlive () (? bool)
+	func (@"net/http".reqÂ·2 *@"net/http".Request "esc:0x9") @"net/http".write (@"net/http".wÂ·3 @"io".Writer, @"net/http".usingProxyÂ·4 bool, @"net/http".extraHeadersÂ·5 @"net/http".Header "esc:0x9") (? error)
+	type @"".Service struct { Name string; Region string }
+	func (@"".sÂ·2 *@"".Service "esc:0x1") Sign (@"".keysÂ·3 *@"".Keys "esc:0x1", @"".rÂ·4 *@"net/http".Request "esc:0x9") (? error)
+	func (@"".sÂ·2 *@"".Service "esc:0x1") @"".creds (@"".tÂ·3 @"time".Time "esc:0x9") (? string)
+	func (@"".sÂ·1 *@"".Service "esc:0x1") @"".writeBody (@"".wÂ·2 @"io".Writer, @"".rÂ·3 *@"net/http".Request "esc:0x9")
+	func (@"".sÂ·1 *@"".Service "esc:0x1") @"".writeHeader (@"".wÂ·2 @"io".Writer, @"".rÂ·3 *@"net/http".Request "esc:0x9")
+	func (@"".sÂ·1 *@"".Service "esc:0x1") @"".writeHeaderList (@"".wÂ·2 @"io".Writer, @"".rÂ·3 *@"net/http".Request "esc:0x1")
+	func (@"".sÂ·1 *@"".Service "esc:0x1") @"".writeQuery (@"".wÂ·2 @"io".Writer, @"".rÂ·3 *@"net/http".Request "esc:0x9")
+	func (@"".sÂ·1 *@"".Service "esc:0x1") @"".writeRequest (@"".wÂ·2 @"io".Writer, @"".rÂ·3 *@"net/http".Request "esc:0x9")
+	func (@"".sÂ·1 *@"".Service "esc:0x1") @"".writeStringToSign (@"".wÂ·2 @"io".Writer, @"".tÂ·3 @"time".Time "esc:0x9", @"".rÂ·4 *@"net/http".Request "esc:0x9")
+	func (@"".sÂ·1 *@"".Service "esc:0x1") @"".writeURI (@"".wÂ·2 @"io".Writer, @"".rÂ·3 *@"net/http".Request "esc:0x9")
+	type @"".Keys struct { AccessKey string; SecretKey string }
+	func (@"".kÂ·2 *@"".Keys "esc:0x1") @"".sign (@"".sÂ·3 *@"".Service "esc:0x1", @"".tÂ·4 @"time".Time "esc:0x9") (? []byte)
+	type @"net/http".Response struct { Status string; StatusCode int; Proto string; ProtoMajor int; ProtoMinor int; Header @"net/http".Header; Body @"io".ReadCloser; ContentLength int64; TransferEncoding []string; Close bool; Trailer @"net/http".Header; Request *@"net/http".Request; TLS *@"crypto/tls".ConnectionState }
+	func (@"net/http".rÂ·2 *@"net/http".Response "esc:0x9") Cookies () (? []*@"net/http".Cookie)
+	func (@"net/http".rÂ·3 *@"net/http".Response "esc:0x9") Location () (? *@"net/url".URL, ? error)
+	func (@"net/http".rÂ·2 *@"net/http".Response "esc:0x1") ProtoAtLeast (@"net/http".majorÂ·3 int, @"net/http".minorÂ·4 int) (? bool) { return @"net/http".rÂ·2.ProtoMajor > @"net/http".majorÂ·3 || @"net/http".rÂ·2.ProtoMajor == @"net/http".majorÂ·3 && @"net/http".rÂ·2.ProtoMinor >= @"net/http".minorÂ·4 }
+	func (@"net/http".rÂ·2 *@"net/http".Response "esc:0x9") Write (@"net/http".wÂ·3 @"io".Writer) (? error)
+	type @"net/http".RoundTripper interface { RoundTrip(? *@"net/http".Request) (? *@"net/http".Response, ? error) }
+	type @"net/http".CookieJar interface { Cookies(@"net/http".u *@"net/url".URL) (? []*@"net/http".Cookie); SetCookies(@"net/http".u *@"net/url".URL, @"net/http".cookies []*@"net/http".Cookie) }
+	type @"net/http".Client struct { Transport @"net/http".RoundTripper; CheckRedirect func(@"net/http".req *@"net/http".Request, @"net/http".via []*@"net/http".Request) (? error); Jar @"net/http".CookieJar; Timeout @"time".Duration }
+	func (@"net/http".cÂ·3 *@"net/http".Client "esc:0x9") Do (@"net/http".reqÂ·4 *@"net/http".Request) (@"net/http".respÂ·1 *@"net/http".Response, @"net/http".errÂ·2 error)
+	func (@"net/http".cÂ·3 *@"net/http".Client "esc:0x9") Get (@"net/http".urlÂ·4 string) (@"net/http".respÂ·1 *@"net/http".Response, @"net/http".errÂ·2 error)
+	func (@"net/http".cÂ·3 *@"net/http".Client "esc:0x9") Head (@"net/http".urlÂ·4 string) (@"net/http".respÂ·1 *@"net/http".Response, @"net/http".errÂ·2 error)
+	func (@"net/http".cÂ·3 *@"net/http".Client "esc:0x9") Post (@"net/http".urlÂ·4 string, @"net/http".bodyTypeÂ·5 string, @"net/http".bodyÂ·6 @"io".Reader) (@"net/http".respÂ·1 *@"net/http".Response, @"net/http".errÂ·2 error)
+	func (@"net/http".cÂ·3 *@"net/http".Client "esc:0x9") PostForm (@"net/http".urlÂ·4 string, @"net/http".dataÂ·5 @"net/url".Values "esc:0x1") (@"net/http".respÂ·1 *@"net/http".Response, @"net/http".errÂ·2 error)
+	func (@"net/http".cÂ·3 *@"net/http".Client "esc:0x9") @"net/http".doFollowingRedirects (@"net/http".ireqÂ·4 *@"net/http".Request, @"net/http".shouldRedirectÂ·5 func(? int) (? bool) "esc:0x1") (@"net/http".respÂ·1 *@"net/http".Response, @"net/http".errÂ·2 error)
+	func (@"net/http".cÂ·3 *@"net/http".Client "esc:0x9") @"net/http".send (@"net/http".reqÂ·4 *@"net/http".Request) (? *@"net/http".Response, ? error)
+	func (@"net/http".cÂ·2 *@"net/http".Client "esc:0x22") @"net/http".transport () (? @"net/http".RoundTripper) { if @"net/http".cÂ·2.Transport != nil { return @"net/http".cÂ·2.Transport }; return @"net/http".DefaultTransport }
+	type @"".Client struct { Keys *@"".Keys; Client *@"net/http".Client }
+	func (@"".cÂ·3 *@"".Client "esc:0x9") Do (@"".reqÂ·4 *@"net/http".Request) (@"".respÂ·1 *@"net/http".Response, @"".errÂ·2 error)
+	func (@"".cÂ·3 *@"".Client "esc:0x9") Get (@"".urlÂ·4 string) (@"".respÂ·1 *@"net/http".Response, @"".errÂ·2 error)
+	func (@"".cÂ·3 *@"".Client "esc:0x9") Head (@"".urlÂ·4 string) (@"".respÂ·1 *@"net/http".Response, @"".errÂ·2 error)
+	func (@"".cÂ·3 *@"".Client "esc:0x9") Post (@"".urlÂ·4 string, @"".bodyTypeÂ·5 string, @"".bodyÂ·6 @"io".Reader) (@"".respÂ·1 *@"net/http".Response, @"".errÂ·2 error)
+	func (@"".cÂ·3 *@"".Client "esc:0x9") PostForm (@"".urlÂ·4 string, @"".dataÂ·5 @"net/url".Values "esc:0x1") (@"".respÂ·1 *@"net/http".Response, @"".errÂ·2 error)
+	func (@"".cÂ·2 *@"".Client "esc:0x22") @"".client () (? *@"net/http".Client) { if @"".cÂ·2.Client == nil { return @"net/http".DefaultClient }; return @"".cÂ·2.Client }
+	var @"".DefaultClient *@"".Client
+	func @"".KeysFromEnvironment () (? *@"".Keys)
+	func @"".Post (@"".urlÂ·3 string, @"".bodyTypeÂ·4 string, @"".bodyÂ·5 @"io".Reader) (@"".respÂ·1 *@"net/http".Response, @"".errÂ·2 error)
+	func @"".PostForm (@"".urlÂ·3 string, @"".dataÂ·4 @"net/url".Values "esc:0x1") (@"".respÂ·1 *@"net/http".Response, @"".errÂ·2 error)
+	func @"".Sign (@"".keysÂ·2 *@"".Keys "esc:0x1", @"".rÂ·3 *@"net/http".Request "esc:0x9") (? error)
+	func @"".init ()
+	func @"math/big".low64 (@"math/big".zÂ·2 @"math/big".nat "esc:0x1") (? uint64) { if len(@"math/big".zÂ·2) == 0x0 { return 0x0 }; var @"math/big".vÂ·3 uint64; ; @"math/big".vÂ·3 = uint64(@"math/big".zÂ·2[0x0]); if true && len(@"math/big".zÂ·2) > 0x1 { @"math/big".vÂ·3 |= uint64(@"math/big".zÂ·2[0x1]) << 0x20 }; return @"math/big".vÂ·3 }
+	var @"time".months [12]string
+	var @"time".days [7]string
+	var @"time".Local *@"time".Location
+	var @"time".UTC *@"time".Location
+	func @"net".IPv4 (@"net".aÂ·2 byte, @"net".bÂ·3 byte, @"net".cÂ·4 byte, @"net".dÂ·5 byte) (? @"net".IP) { var @"net".pÂ·6 @"net".IP; ; @"net".pÂ·6 = make(@"net".IP, 0x10); copy(@"net".pÂ·6, @"net".v4InV6Prefix); @"net".pÂ·6[0xc] = @"net".aÂ·2; @"net".pÂ·6[0xd] = @"net".bÂ·3; @"net".pÂ·6[0xe] = @"net".cÂ·4; @"net".pÂ·6[0xf] = @"net".dÂ·5; return @"net".pÂ·6 }
+	var @"bufio".ErrInvalidUnreadByte error
+	var @"bufio".ErrInvalidUnreadRune error
+	import errors "errors" // indirect
+	func @"errors".New (@"errors".textÂ·2 string) (? error) { return (&@"errors".errorString{ @"errors".s:@"errors".textÂ·2 }) }
+	var @"net/http".DefaultTransport @"net/http".RoundTripper
+	var @"net/http".DefaultClient *@"net/http".Client
+	var @"net".v4InV6Prefix []byte
+	type @"errors".errorString struct { @"errors".s string }
+	func (@"errors".eÂ·2 *@"errors".errorString "esc:0x22") Error () (? string) { return @"errors".eÂ·2.@"errors".s }
+
+$$
+_go_.o          0           0     0     644     100182    `
+go object linux 386 go1.5.3 X:none
+
+!
+  go13ldio.anet/http.anet/url.aos.astrings.abytes.acrypto/hmac.acrypto/sha256.a
+fmt.aio/ioutil.apath/filepath.asort.atime.a ş,"".KeysFromEnvironment  À  ºe‹    ‹‰    ;a†½   ƒì$»    ‰$ÇD$   è    ‹\$‰\$‹\$‰\$ »    ‰$ÇD$   è    ‹\$‰\$‹\$‰\$Ç$    è    ‹D$‰D$‹l$ ‰h‹l$€=     u6‰(‹l$‰h‹l$€=     u‰h‰D$(ƒÄ$Ãp‰4$‰l$è    ‹D$ëã‰$‰l$è    ‹D$ëºè    é#ÿÿÿ      4  4go.string."AWS_ACCESS_KEY"   T
+  os.Getenv   ~  4go.string."AWS_SECRET_KEY"   
+  os.Getenv   Ì  type."".Keys   Ö
+  "runtime.newobject   ˆ  6runtime.writeBarrierEnabled   ´  6runtime.writeBarrierEnabled   î
+  .runtime.writebarrierptr   ’
+  .runtime.writebarrierptr   ¨
+  0runtime.morestack_noctxt   H  "".autotmp_0002 'type.*"".Keys "".autotmp_0001 type.string "".autotmp_0000 type.string "".~r0  type.*"".Keys H’GH4 à " %f  )%L TgclocalsÂ·4d8f4351ae24f7a880f472246ed2ba20 TgclocalsÂ·69330bf7bffe831e4a4f0e4ba1e73cde   ”/home/aliaksandr/work/ivona/golang/src/github.com/bmizerany/aws4/client.goş"".Post     Še‹    ‹‰    ;aviƒì(1Û1Û‰\$H‰\$L‹    ‰$‹\$,‰\$‹\$0‰\$‹\$4‰\$‹\$8‰\$‹\$<‰\$‹\$@‰\$è    ‹T$‹L$ ‹D$$‰T$D‰L$H‰D$LƒÄ(Ãè    é{ÿÿÿ      F   "".DefaultClient   ¶
+  """.(*Client).Post   ø
+  0runtime.morestack_noctxt   HP  
+"".err 8type.error "".resp 0.type.*net/http.Response "".body  type.io.Reader "".bodyType type.string "".url  type.string PeOP  @!Z 
+ Z6 TgclocalsÂ·0394bc1b5f235af63e0d6b6285a75ca4 TgclocalsÂ·33cdeccccebe80329f1fdbee7f5874cb   ”/home/aliaksandr/work/ivona/golang/src/github.com/bmizerany/aws4/client.goş"".PostForm  à  Ôe‹    ‹‰    ;avQƒì1Û1Û‰\$0‰\$4‹    ‰$‹\$ ‰\$‹\$$‰\$‹\$(‰\$è    ‹T$‹L$‹D$‰T$,‰L$0‰D$4ƒÄÃè    ë–      F   "".DefaultClient   †
+  *"".(*Client).PostForm   È
+  0runtime.morestack_noctxt   08  "".err  type.error "".resp .type.*net/http.Response "".data &type.net/url.Values "".url  type.string 8M78 p J!B 
+ B. TgclocalsÂ·b4c25e9b09fd0cf9bb429dcefe91c353 TgclocalsÂ·33cdeccccebe80329f1fdbee7f5874cb   ”/home/aliaksandr/work/ivona/golang/src/github.com/bmizerany/aws4/client.goş&"".(*Client).client  €  re‹    ‹‰    ;av ‹L$‹i1Û9İu‹    ‰\$Ã‹i‰l$Ãè    ëÇ      B  ,net/http.DefaultClient   f
+  0runtime.morestack_noctxt      "".~r0 *type.*net/http.Client "".c  type.*"".Client @ @ R	  TgclocalsÂ·3f5c1f818fa7055d0400cecd34057162 TgclocalsÂ·33cdeccccebe80329f1fdbee7f5874cb   ”/home/aliaksandr/work/ivona/golang/src/github.com/bmizerany/aws4/client.goş"".(*Client).Do     Še‹    ‹‰    ;aviƒì1Û1Û‰\$$‰\$(‹\$‹+‰,$‹\$‰\$è    ‹D$‹h1Û9İu2‹    ‰$‹\$‰\$è    ‹T$‹L$‹D$‰T$ ‰L$$‰D$(ƒÄÃ‹@ëÏè    é{ÿÿÿ
+      f
+  "".Sign   Œ  ,net/http.DefaultClient   ¬
+  *net/http.(*Client).Do   ø
+  0runtime.morestack_noctxt   ((  "".err type.error "".resp .type.*net/http.Response "".req ,type.*net/http.Request "".c  type.*"".Client (`'(  `!D 
+ 2^ TgclocalsÂ·1347047f6245a35b91e9a4f213167d52 TgclocalsÂ·33cdeccccebe80329f1fdbee7f5874cb   ”/home/aliaksandr/work/ivona/golang/src/github.com/bmizerany/aws4/client.goş "".(*Client).Get  à  Şe‹    ‹‰    ;a†   ƒì$1Û1Û‰\$8‰\$<»    ‰$ÇD$   ‹\$,‰\$‹\$0‰\$1Û‰\$‰\$è    ‹D$‹L$‹\$ ‰\$<‰L$8ƒù tÇD$4    ƒÄ$Ã‹\$(‰$‰D$è    ‹T$‹L$‹D$‰T$4‰L$8‰D$<ƒÄ$Ãè    éQÿÿÿ
+      L  go.string."GET"    
+  &net/http.NewRequest   Š
+  "".(*Client).Do   Ì
+  0runtime.morestack_noctxt   0H  "".err  type.error "".resp .type.*net/http.Response "".url type.string "".c  type.*"".Client H_GH+GH ° j%?	,	 
+ Oa TgclocalsÂ·d98f60bd8519d0c68364b2a1d83af357 TgclocalsÂ·33cdeccccebe80329f1fdbee7f5874cb   ”/home/aliaksandr/work/ivona/golang/src/github.com/bmizerany/aws4/client.goş""".(*Client).Head  à  Şe‹    ‹‰    ;a†   ƒì$1Û1Û‰\$8‰\$<»    ‰$ÇD$   ‹\$,‰\$‹\$0‰\$1Û‰\$‰\$è    ‹D$‹L$‹\$ ‰\$<‰L$8ƒù tÇD$4    ƒÄ$Ã‹\$(‰$‰D$è    ‹T$‹L$‹D$‰T$4‰L$8‰D$<ƒÄ$Ãè    éQÿÿÿ
+      L   go.string."HEAD"    
+  &net/http.NewRequest   Š
+  "".(*Client).Do   Ì
+  0runtime.morestack_noctxt   0H  "".err  type.error "".resp .type.*net/http.Response "".url type.string "".c  type.*"".Client H_GH+GH ° z%?	,	 
+ Oa TgclocalsÂ·d98f60bd8519d0c68364b2a1d83af357 TgclocalsÂ·33cdeccccebe80329f1fdbee7f5874cb   ”/home/aliaksandr/work/ivona/golang/src/github.com/bmizerany/aws4/client.goş""".(*Client).Post  à  Òe‹    ‹‰    ;a†É   ƒì(1Û1Û‰\$L‰\$P»    ‰$ÇD$   ‹\$0‰\$‹\$4‰\$‹\$@‰\$‹\$D‰\$è    ‹D$‹L$‹\$ ‰\$P‰L$Lƒù tÇD$H    ƒÄ(Ã‰D$$‹h‰,$»    ‰\$ÇD$   ‹\$8‰\$‹\$<‰\$è    ‹\$,‰$‹\$$‰\$è    ‹T$‹L$‹D$‰T$H‰L$L‰D$PƒÄ(Ãè    éÿÿÿ      L   go.string."POST"   ¬
+  &net/http.NewRequest   ”  0go.string."Content-Type"   Ö
+  &net/http.Header.Set   ş
+  "".(*Client).Do   À
+  0runtime.morestack_noctxt   PP  "".req ,type.*net/http.Request "".err @type.error "".resp 8.type.*net/http.Response "".body (type.io.Reader "".bodyType type.string "".url type.string "".c  type.*"".Client PeOP_OP ğ  Š%E	00  UU2 TgclocalsÂ·76db95b748eb9ac765b58fa2e4cf2b24 TgclocalsÂ·0c8aa8e80191a30eac23f1a218103f16   ”/home/aliaksandr/work/ivona/golang/src/github.com/bmizerany/aws4/client.goş*"".(*Client).PostForm  à  Şe‹    ‹‰    ;a†  ƒì<1Û1Û‰\$T‰\$X‹\$L‰$è    ‹L$‹D$‰L$,‰D$0Ç$    è    ‹T$‰T$(‹l$0‰j‹l$,€=     …£   ‰*1À1í‰B‰j¸ÿÿÿÿ‰B‰T$(‹    1í9èt]‹\$@‰$‹\$D‰\$‹\$H‰\$»    ‰\$ÇD$!   ‹L$(‰D$4‰D$‰L$8‰L$è    ‹T$‹L$ ‹D$$‰T$P‰L$T‰D$XƒÄ<ÃÇ$    ÇD$    ÇD$    è    ‹D$ë‰$‰l$è    ‹T$(éJÿÿÿè    éÑşÿÿ      Z
+  *net/url.Values.Encode   ˆ  &type.strings.Reader   ’
+  "runtime.newobject   Ä  6runtime.writeBarrierEnabled     Bgo.itab.*strings.Reader.io.Reader   Ò  Zgo.string."application/x-www-form-urlencoded"   œ
+  """.(*Client).Post   â  (type.*strings.Reader   ò  type.io.Reader   ‚  Bgo.itab.*strings.Reader.io.Reader   Œ
+   runtime.typ2Itab   °
+  .runtime.writebarrierptr   Ì
+  0runtime.morestack_noctxt   8x  "".autotmp_0022 '(type.*strings.Reader "".autotmp_0021  (type.*strings.Reader "".autotmp_0020  (type.*strings.Reader strings.sÂ·2 type.string "".err (type.error "".resp  .type.*net/http.Response "".data &type.net/url.Values "".url type.string "".c  type.*"".Client xÔwxB ° œ%€  ,…8+ TgclocalsÂ·0fe6cb1d8f40b738d38d37477ad84346 TgclocalsÂ·6013db99caf2bb60e55bc0c016a4e7e9   ”/home/aliaksandr/work/ivona/golang/src/github.com/bmizerany/aws4/client.goş"".(*Keys).sign  €  âe‹    ‹‰    ;a†Ñ  ƒìp1Û‰œ$Œ   ‰œ$   ‰œ$”   \$$‰$»    ‰\$ÇD$   ‹D$tƒø „‹  ƒÀ|$ü‹‰‹H‰Oè    \$|$ü‹‰‹K‰OÇ$    è    ‹\$‰\$d‹\$‰\$h‹\$‰\$l‹\$|‰$‹œ$€   ‰\$‹œ$„   ‰\$‹œ$ˆ   ‰\$»    ‰\$ÇD$   è    ‹L$‹D$Ç$    ‰L$D‰L$‰D$H‰D$è    ‹T$‹L$‹D$‹\$d‰$‹\$h‰\$‹\$l‰\$‰T$X‰T$‰L$\‰L$‰D$`‰D$è    ‹\$‰\$L‹\$‰\$P‹\$ ‰\$TÇ$    ‹D$xƒø „h  ƒÀ|$ü‹‰‹H‰Oè    ‹T$‹L$‹D$‹\$L‰$‹\$P‰\$‹\$T‰\$‰T$X‰T$‰L$\‰L$‰D$`‰D$è    ‹\$‰\$L‹\$‰\$P‹\$ ‰\$TÇ$    ‹\$x|$ü‹‰‹K‰Oè    ‹T$‹L$‹D$‹\$L‰$‹\$P‰\$‹\$T‰\$‰T$X‰T$‰L$\‰L$‰D$`‰D$è    ‹\$‰\$L‹\$‰\$P‹\$ ‰\$TÇ$    »    ‰\$ÇD$   è    ‹T$‹L$‹D$‹\$L‰$‹\$P‰\$‹\$T‰\$‰T$X‰T$‰L$\‰L$‰D$`‰D$è    ‹T$‹L$‹D$ ‰”$Œ   ‰Œ$   ‰„$”   ƒÄpÃ‰ é‘şÿÿ‰ énıÿÿè    éıÿÿ       p   go.string."AWS4"   Ğ
+  *runtime.concatstring2   
+  2runtime.stringtoslicebyte   ˜  (go.string."20060102"   º
+   time.Time.Format   ‚
+  2runtime.stringtoslicebyte   ‚
+  "".ghmac   ˆ
+  2runtime.stringtoslicebyte   ˆ
+  "".ghmac   ö
+  2runtime.stringtoslicebyte   ö
+  "".ghmac   ¾	  0go.string."aws4_request"   à	
+  2runtime.stringtoslicebyte   à
+
+  "".ghmac   Ğ
+  0runtime.morestack_noctxt   Hà  "".autotmp_0034 —type.[32]uint8 "".autotmp_0033  type.[]uint8 "".autotmp_0032  type.[]uint8 "".autotmp_0031  type.[]uint8 "".autotmp_0030 /type.[]uint8 "".autotmp_0029 Wtype.string "".autotmp_0028 type.[]uint8 "".h Gtype.[]uint8 "".~r2 0type.[]uint8 "".t type.time.Time "".s  type.*"".Service "".k  type.*"".Keys à¿ßà' € *@0­ƒwi * gudC@7@5@Q TgclocalsÂ·8d5b84c32c19bce51a2c11bd072208b1 TgclocalsÂ·a2104d423e44b7840e1e949d7f9b7bea   /home/aliaksandr/work/ivona/golang/src/github.com/bmizerany/aws4/sign.goş"".Sign  À  ¤e‹    ‹‰    ;a†ò  ƒìX1Û‰\$d‰\$h‹D$`ƒø „Ñ  ƒÀ@ü‹‰$‹H‰L$»    ‰\$ÇD$   è    ‹T$‰T$0‹L$‹\$‰\$8‰L$4ƒùİ   1Û‰\$(‰\$,\$(ƒû „¿   ÇD$@   ÇD$D   ‰\$<Ç$    ‹\$`‰\$ƒ|$ „†   ƒD$@ÇD$    è    ‹L$‹D$‹\$<‰L$ ‰‰D$$€=     uD‰C»    ‰$ÇD$   ‹\$<‰\$‹\$@‰\$‹\$D‰\$è    ‹L$‹D$‰L$d‰D$hƒÄXÃs‰4$‰D$è    ë®‰    éoÿÿÿ‰é:ÿÿÿ1À‰D$H‰D$L‰D$P‰D$TD$Hƒù †‡   ‰D$ƒø tz‰D$‰T$»    ‰$è    ƒ|$4vW‹\$0ƒÃ‹l$ƒı tBu‰t$‰\$»    ‰$è    ‹\$‰$‹\$\‰\$‹\$`‰\$è    1Û‰\$d‰\$hƒÄXÃ‰E ë¹è    ‰ ë‚è    ‰ é(şÿÿè    éîıÿÿ"      ‚  go.string."."   ¤
+  strings.Split   Ê  type.string   ”
+  runtime.convT2E   Ì  6runtime.writeBarrierEnabled   â  Hgo.string."Invalid AWS Endpoint: %s"   ²
+  fmt.Errorf   ø
+  .runtime.writebarrierptr   Š  type.string   š
+  (runtime.typedmemmove   è  type.string   ø
+  (runtime.typedmemmove   °
+  $"".(*Service).Sign   à
+  $runtime.panicindex   ö
+  $runtime.panicindex   ’
+  0runtime.morestack_noctxt    °  "".autotmp_0050 type."".Service "".autotmp_0049 o"type.interface {} "".autotmp_0048 _(type.[1]interface {} "".autotmp_0045 7&type.[]interface {} 
+"".sv w type.*"".Service "".parts Otype.[]string "".~r2 type.error "".r ,type.*net/http.Request "".keys  type.*"".Keys (°—¯°¸¯°6   8d#Gİ'/	 " QxO#Q/I TgclocalsÂ·a68b09a48716afad7ca7a02fe6add474 TgclocalsÂ·dd7e866ac2fa97357857e45055126971   /home/aliaksandr/work/ivona/golang/src/github.com/bmizerany/aws4/sign.goş$"".(*Service).Sign   #   #e‹    ‹‰    „$ ÿÿÿ;A†©  ì€  1Û‰œ$  ‰œ$”  ‹œ$Œ  ‹k‰,$»    ‰\$ÇD$   è    ‹\$‰œ$ø   ‹\$‰œ$ü   è    ‹<$‹t$‹l$‹\$1Û‹    ‰¼$`  ‰´$d  ‰¬$h  ‰”$l  ‰¼$P  ‰¼$p  ‰´$T  ‰´$t  ‰¬$X  ‰¬$x  ‰”$\  ‰”$|  ‹œ$ü   ƒû t{1Û‰œ$ğ   ‰œ$ô   »    ‰$ÇD$   ‹œ$ø   ‰\$‹œ$ü   ‰\$è    ‹|$‹t$‹l$‹T$‹D$ ‹L$$‰Œ$ô   ‰„$ğ   ƒø t‰„$  ‰Œ$”  Ä€  Ã‰¼$p  ‰<$‰´$t  ‰t$‰¬$x  ‰l$‰”$|  ‰T$»    ‰\$ÇD$   è    ‹L$‹D$‹œ$Œ  ‹k‰,$»    ‰\$ÇD$   ‰Œ$  ‰L$‰„$  ‰D$è    ‹œ$ˆ  ‰$‹œ$„  ‰\$‹œ$p  ‰\$‹œ$t  ‰\$‹œ$x  ‰\$‹œ$|  ‰\$è    ‹T$‹L$‹D$ »    ‰$‰”$   ‰T$‰Œ$$  ‰L$‰„$(  ‰D$è    ‹L$‹D$Ç$    ‰Œ$è   ‰L$‰„$ì   ‰D$è    \$|$ü‹‰‹K‰O‹œ$„  ‰$‹œ$p  ‰\$‹œ$t  ‰\$‹œ$x  ‰\$‹œ$|  ‰\$‹œ$Œ  ‰\$è    ¹    ¸   Ç$    ‰Œ$à   ‰L$‰„$ä   ‰D$è    ‹\$‰œ$D  ‹\$‰œ$H  ‹\$‰œ$L  Ç$    è    ‹L$‰Ïƒù „o  1Àè    ‰Œ$Ğ   ‹¬$H  ‰i‹¬$L  ‰i‹¬$D  €=     …!  ‰)‰Œ$Ô   ‹œ$„  ‰$‹œ$p  ‰\$‹œ$t  ‰\$‹œ$x  ‰\$‹œ$|  ‰\$è    ‹l$‹T$œ$   ‰$»    ‰\$ÇD$   ‹œ$ˆ  |$ü‹‰‹K‰O»    ‰\$ÇD$   ‰¬$  ‰l$‰”$  ‰T$ è    \$$|$ü‹‰‹K‰Oœ$°   ‰$è    ‹T$‹L$‹D$‹œ$Ô   ‰$‰”$D  ‰T$‰Œ$H  ‰L$‰„$L  ‰D$è    \$.¶-    •ˆ•¶-    •ˆC•‰Ú¹   ¸   ‹œ$Ô   ‰$‰”$D  ‰T$‰Œ$H  ‰L$‰„$L  ‰D$è    \$p‰$»    ‰\$ÇD$   è    ‹T$‹L$‹D$‹œ$Ô   ‰$‰”$D  ‰T$‰Œ$H  ‰L$‰„$L  ‰D$è    ‹œ$Ô   ‰œ$Ğ   ‹    1í9è„'  ‹œ$„  ‰$‹Œ$Ğ   ‰„$   ‰D$‰Œ$  ‰L$‹œ$Œ  ‰\$è    \$,¶-    •ˆ•¶-    •ˆC•‰Ú¹   ¸   ‹œ$Ô   ‰$‰”$D  ‰T$‰Œ$H  ‰L$‰„$L  ‰D$è    1Û‰\$‰\$‰\$‹œ$ì   ‰$‹œ$è   ‹[ ÿÓ‹\$‰œ$8  ‹\$‰œ$<  ‹\$‰œ$@  1Û‰œ$  ‰œ$  œ$  ƒû „-  Ç„$0     Ç„$4     ‰œ$,  Ç$    œ$8  ‰\$ÇD$    è    ‹L$‹D$‹œ$,  ‰Œ$  ‰‰„$  €=     …±  ‰C»    ‰$ÇD$   ‹œ$,  ‰\$‹œ$0  ‰\$‹œ$4  ‰\$è    ‹L$‹D$\$0‰$»    ‰\$ÇD$
+   ‰Œ$  ‰L$‰„$  ‰D$è    \$|$ü‹‰‹K‰O\$P‰$è    ‹T$‹L$‹D$‹œ$Ô   ‰$‰”$D  ‰T$‰Œ$H  ‰L$‰„$L  ‰D$è    ‹„$Ô   1Û‰œ$Ø   ‰œ$Ü   1í9èuZ¹    ¸   ‹œ$Œ  ‹k‰,$»    ‰\$ÇD$   ‰Œ$Ø   ‰L$‰„$Ü   ‰D$è    1Û‰œ$  ‰œ$”  Ä€  Ã‹h‹H‹P9ÍwW‰Î)î)ê‹ƒú téÇ$    ‰Œ$D  ‰L$‰´$H  ‰t$‰”$L  ‰T$è    ‹L$‹D$‰Œ$  ‰„$  éLÿÿÿè    s‰4$‰D$è    é>şÿÿ‰éÌıÿÿÇ$    ÇD$    ÇD$    è    ‹D$é´üÿÿ‰$‰l$è    ‹Œ$Ğ   éÉúÿÿ‰éŠúÿÿè    é0÷ÿÿ|      ‚   go.string."Date"   ¤
+  &net/http.Header.Get   Ú
+  time.Now   ˆ  time.UTC   ò  Rgo.string."Mon, 02 Jan 2006 15:04:05 GMT"   ¾
+  time.Parse     8go.string."20060102T150405Z"   À
+   time.Time.Format   ô   go.string."Date"   Â
+  &net/http.Header.Set   Î
+  "".(*Keys).sign   ğ  (crypto/sha256.NewÂ·f   Â	
+  crypto/hmac.New   à	  type.io.Writer   –
+
+  runtime.convI2I   È
+  >"".(*Service).writeStringToSign   Ò  :go.string."AWS4-HMAC-SHA256 "    
+  2runtime.stringtoslicebyte   ğ  "type.bytes.Buffer   ú
+  "runtime.newobject   ¦
+Ô  runtime.duffzero   ö  6runtime.writeBarrierEnabled   Œ
+  &"".(*Service).creds   º  .go.string."Credential="   ˆ  go.string."/"   Ö
+  *runtime.concatstring4   š
+  2runtime.stringtoslicebyte   ’
+  *bytes.(*Buffer).Write   ¨  """.statictmp_0069   ¾ """.statictmp_0069   À
+  *bytes.(*Buffer).Write   Ø  4go.string."SignedHeaders="   ú
+  2runtime.stringtoslicebyte   ò
+  *bytes.(*Buffer).Write   š  >go.itab.*bytes.Buffer.io.Writer   œ
+  :"".(*Service).writeHeaderList   ²  """.statictmp_0075   È """.statictmp_0075   Ê
+  *bytes.(*Buffer).Write   –       Ü  type.[]uint8   Œ
+  runtime.convT2E   Ö  6runtime.writeBarrierEnabled   ô  go.string."%x"   Ö
+  fmt.Sprintf   ş  ,go.string."Signature="   Ì
+  *runtime.concatstring2   Š
+  2runtime.stringtoslicebyte   ‚
+  *bytes.(*Buffer).Write   Æ  "go.string."<nil>"   ô  2go.string."Authorization"   Â
+  &net/http.Header.Set   ‚!
+  2runtime.slicebytetostring   Â!
+  $runtime.panicslice   ä!
+  .runtime.writebarrierptr   Š"  $type.*bytes.Buffer   š"  type.io.Writer   ª"  >go.itab.*bytes.Buffer.io.Writer   ´"
+   runtime.typ2Itab   Ş"
+  .runtime.writebarrierptr   #
+  0runtime.morestack_noctxt   (€  R"".autotmp_0085  type.string "".autotmp_0084 Ÿtype.[32]uint8 "".autotmp_0083 ßtype.[32]uint8 "".autotmp_0082 ï"type.interface {} "".autotmp_0081 ß(type.[1]interface {} "".autotmp_0078 §&type.[]interface {} "".autotmp_0077 §type.[2]uint8 "".autotmp_0076  type.*[2]uint8 "".autotmp_0074  type.[]uint8 "".autotmp_0072 Ÿtype.[32]uint8 "".autotmp_0071 £type.[2]uint8 "".autotmp_0068  type.[]uint8 "".autotmp_0067 ßtype.[32]uint8 "".autotmp_0066 Ÿtype.[32]uint8 "".autotmp_0065 ß$type.*bytes.Buffer "".autotmp_0064  $type.*bytes.Buffer "".autotmp_0063  type.[]uint8 "".autotmp_0062  type.int "".autotmp_0061  type.[]uint8 "".autotmp_0060  type.string "".autotmp_0059 type.[]uint8 "".autotmp_0058  $type.*bytes.Buffer "".autotmp_0057  type.[]uint8 "".autotmp_0056  type.[]uint8 "".autotmp_0055  type.string "".autotmp_0054 wtype.[]uint8 "".autotmp_0053 Ïtype.string "".~r0 Ïtype.string bytes.sÂ·2 ¿type.string "".~r0 _type.time.Time time.tÂ·2 ?type.time.Time "".auth ×$type.*bytes.Buffer "".h ¯type.hash.Hash "".k ¿type.[]uint8 "".err Ÿtype.error "".t type.time.Time "".date type.string "".~r2 type.error "".r ,type.*net/http.Request "".keys type.*"".Keys "".s   type.*"".Service *#€¿ÿ€˜ÿ€Ô Ğ r~39pJ‚R6{§şWYUWœ`k%
+ N Q²ë²‰Æzeö‘(" TgclocalsÂ·241579fc4a2679a16a513edfd2f385e5 TgclocalsÂ·28f74711dd42e3614c58ecf92b4044cf   /home/aliaksandr/work/ivona/golang/src/github.com/bmizerany/aws4/sign.goş0"".(*Service).writeQuery  à  Äe‹    ‹‰    D$Ğ;A†>  ì°   1Û‰\$t‰\$x‰\$|‹œ$À   ‹k‰,$è    ‹\$¼$€   1Àè    Ç$    ‰\$œ$€   ‰\$è    ‹„$€   1Û9Ø„N  ‹œ$„   ƒû „Ã  ‹;‹s‹S‹œ$€   ƒû „¤  ‹‹k‰|$h‰|$P‰t$l‰t$T‰T$p‰T$X‰L$@‰$‰l$D‰l$è    ‹\$‰\$@‹\$‰\$D‹L$P‹D$T‹\$X‰\$pÇD$(    ‰D$l‰D$$‰L$h‰L$,‹\$(‹l$$9ë   ‹\$,ƒû „  ‹‹k‰T$H‰T$0‰l$L‰l$4ƒı …  ‹L$t‹D$x‹T$|‰ÃC9Ó‡À  ‰\$x‰Ë‰Åkíë‹l$D‰k‹l$@€=     …Š  ‰+‹\$,ƒÃ‰\$,‹\$(C‰\$(‹\$(‹l$$9ëŒsÿÿÿœ$€   ‰$è    ‹„$€   1Û9Ø…²şÿÿ‹\$t‰$‹\$x‰\$‹\$|‰\$è    ‹T$t‹L$x‹\$|‰\$p1À‰L$l‰L$$‰T$h‰Ñ‹l$$9èî   ‰L$,ƒù „è   ‹‹i‰D$(‰T$H‰T$8‰l$L‰l$<ƒø ~UÇ$    è    ‹D$¶-    ‡İˆ‡İº   ¹   ‰D$\‰D$‰T$`‰T$‰L$d‰L$‹œ$¼   ‰$‹œ$¸   ‹[ÿÓÇ$    ‹\$8‰\$‹\$<‰\$è    ‹D$‹T$‹L$‰D$\‰D$‰T$`‰T$‰L$d‰L$‹œ$¼   ‰$‹œ$¸   ‹[ÿÓ‹L$,ƒÁ‹D$(@‹l$$9èŒÿÿÿÄ°   Ã‰éÿÿÿ‰$‰l$è    égşÿÿÇ$    ‰L$‰D$‰T$‰\$è    ‹L$‹D$‹T$‰ÃC‰\$x‰T$|‰L$téşÿÿ‰$‰l$è    ‹L$‹D$Ç$    ‹\$@‰\$‹\$D‰\$»    ‰\$ÇD$   ‰L$0‰L$‰D$4‰D$è    ‹\$‰\$H‹\$ ‰\$L‹L$t‹D$x‹T$|‰ÃC9Ów9‰\$x‰Ë‰Åkíë‹l$L‰k‹l$H€=     u‰+éıÿÿ‰$‰l$è    é~ıÿÿÇ$    ‰L$‰D$‰T$‰\$è    ‹L$‹D$‹T$‰ÃC‰\$x‰T$|‰L$të’‰éâüÿÿ‰éUüÿÿ‰é6üÿÿè    éûÿÿ4      x
+  (net/url.(*URL).Query   œ
+è  runtime.duffzero   ª  &type.net/url.Values   Ò
+  &runtime.mapiterinit   ¦
+  &net/url.QueryEscape   ö  6runtime.writeBarrierEnabled   î
+  &runtime.mapiternext   È
+  sort.Strings   „	  type.[1]uint8   	
+  "runtime.newobject   ¤	  """.statictmp_0119   ¤
+       Ø
+
+  2runtime.stringtoslicebyte   Ğ       °
+  .runtime.writebarrierptr   È  type.[]string   ò
+  "runtime.growslice   Ê
+  &net/url.QueryEscape   ’  go.string."="   Ô
+  *runtime.concatstring3   Ö  6runtime.writeBarrierEnabled   ‚
+  .runtime.writebarrierptr   š  type.[]string   Ä
+  "runtime.growslice   ²
+  0runtime.morestack_noctxt    à  ."".autotmp_0118 §type.[]uint8 "".autotmp_0117  type.string "".autotmp_0116  type.*string "".autotmp_0115  type.int "".autotmp_0114  type.int "".autotmp_0113  type.string "".autotmp_0112 Ïtype.string "".autotmp_0111  type.*string "".autotmp_0110 —type.int "".autotmp_0109 type.int "".autotmp_0108 type.[]string "".autotmp_0107  type.[]uint8 "".autotmp_0106  type.[]string "".autotmp_0105  type.[]string "".autotmp_0104 _:type.map.iter[string][]string "".s ïtype.string "".v ÿtype.string 
+"".vs ¿type.[]string "".k ßtype.string "".a wtype.[]string "".r ,type.*net/http.Request "".w type.io.Writer "".s   type.*"".Service  àèßàç ğ |¸ •$V>$ RUV<ƒ	
+	
+9	 6 ;-jä-cel!,½O TgclocalsÂ·9c79a167ccfc974839491afbe2b5ebd1 TgclocalsÂ·f59bcc4cf141ffdc619e86dadea84cee   /home/aliaksandr/work/ivona/golang/src/github.com/bmizerany/aws4/sign.goş2"".(*Service).writeHeader  €  îe‹    ‹‰    D$Ğ;A†  ì°   ‹œ$À   ‹[1í9ët‹Ç$    ‰Ø™‰D$‰T$‰Ø™‰D$‰T$è    ‹T$‹L$‹D$ÇD$$    ‰T$t‰L$x‰D$|‹œ$À   ‹k¼$€   1Àè    Ç$    ‰l$œ$€   ‰\$è    ‹„$€   1Û9Ø„X  ‹œ$„   ƒû „^  ‹‹K‹C‹œ$€   ƒû „?  ‹+‰l$<‹k‰l$@‰T$h‰L$l‰D$p‰T$\‰$‰L$`‰L$‰D$d‰D$è    ‹\$<‰$‹\$@‰\$è    ‹\$‰\$T‹\$‰\$X‹\$\‰$‹\$`‰\$‹\$d‰\$»    ‰\$ÇD$   è    ‹L$‹D$Ç$    ‹\$T‰\$‹\$X‰\$»    ‰\$ÇD$   ‰L$L‰L$‰D$P‰D$è    ‹T$‹L$ ‹\$$‹l$x9ëƒU  ‹l$tÁãİ‰L$H‰M‰T$D€=     …#  ‰U ‹\$$C‰\$$œ$€   ‰$è    ‹„$€   1Û9Ø…¨şÿÿ‹\$t‰$‹\$x‰\$‹\$|‰\$è    ‹T$t‹L$x‹\$|‰\$p1À‰L$l‰L$(‰T$h‰Ñ‹l$(9è¡   ‰L$0ƒù „›   ‹‹i‰D$,‰T$L‰T$4‰l$P‰l$8ƒø ~4‹    ‰\$‹    ‰\$‹    ‰\$‹œ$¼   ‰$‹œ$¸   ‹[ÿÓ‹œ$¸   ‰$‹œ$¼   ‰\$‹\$4‰\$‹\$8‰\$è    ‹L$0ƒÁ‹D$,@‹l$(9èŒ_ÿÿÿÄ°   Ã‰é^ÿÿÿ‰,$‰T$è    éÏşÿÿè    ‰éºıÿÿ‰é›ıÿÿè    éÉüÿÿ.      j  type.[]string    
+  "runtime.makeslice   
+è  runtime.duffzero     (type.net/http.Header   Æ
+  &runtime.mapiterinit   ¢
+  sort.Strings   Ê
+  strings.ToLower   ¢  go.string.","   Ä
+  strings.Join   Œ  go.string.":"   Î
+  *runtime.concatstring3   ²  6runtime.writeBarrierEnabled   ö
+  &runtime.mapiternext   Ğ
+  sort.Strings   Š
+  
+"".lf   
+ 
+"".lf   ²
+ 
+"".lf   ê
+       º
+  io.WriteString   
+  .runtime.writebarrierptr   ²
+  $runtime.panicindex   Ü
+  0runtime.morestack_noctxt    à  ("".autotmp_0141  type.string "".autotmp_0140  type.*string "".autotmp_0139 type.int "".autotmp_0138  type.int "".autotmp_0137  type.[]string "".autotmp_0136  type.[]string "".autotmp_0135  type.int "".autotmp_0134 Çtype.string "".autotmp_0133 ·type.string "".autotmp_0132 _:type.map.iter[string][]string "".autotmp_0130 type.[]string "".autotmp_0129 ‡type.int "".s ÷type.string "".v §type.[]string "".k çtype.string "".a wtype.[]string "".i —type.int "".r ,type.*net/http.Request "".w type.io.Writer "".s   type.*"".Service  àßßà@ À Xä T…Ò	 
+R4* 6 OSn=E
+'2
+( TgclocalsÂ·9c79a167ccfc974839491afbe2b5ebd1 TgclocalsÂ·0569eea62fd2e8bdd2bc83905f8a3f72   /home/aliaksandr/work/ivona/golang/src/github.com/bmizerany/aws4/sign.goş:"".(*Service).writeHeaderList  à
+  Â
+e‹    ‹‰    D$ä;A†}  ìœ   ‹œ$¬   ‹[1í9ët‹Ç$    ‰Ø™‰D$‰T$‰Ø™‰D$‰T$è    ‹T$‹L$‹D$ÇD$     ‰T$`‰L$d‰D$h‹œ$¬   ‹k|$l1Àè    Ç$    ‰l$\$l‰\$è    ‹D$l1Û9Ø„…   ‹\$lƒû „Ô  ‹‹k‰L$8‰$‰l$<‰l$è    ‹T$‹L$‹\$ ‹l$d9ëƒœ  ‹l$`Áãİ‰L$D‰M‰T$@€=     …j  ‰U ‹\$ C‰\$ \$l‰$è    ‹D$l1Û9Ø…{ÿÿÿ‹\$`‰$‹\$d‰\$‹\$h‰\$è    ‹T$`‹L$d‹\$h‰\$\1À‰L$X‰L$$‰T$T‰Ñ‹l$$9èî   ‰L$,ƒù „è   ‹‹i‰D$(‰T$@‰T$0‰l$D‰l$4ƒø ~UÇ$    è    ‹D$¶-    ‡İˆ‡İº   ¹   ‰D$H‰D$‰T$L‰T$‰L$P‰L$‹œ$¨   ‰$‹œ$¤   ‹[ÿÓÇ$    ‹\$0‰\$‹\$4‰\$è    ‹D$‹T$‹L$‰D$H‰D$‰T$L‰T$‰L$P‰L$‹œ$¨   ‰$‹œ$¤   ‹[ÿÓ‹L$,ƒÁ‹D$(@‹l$$9èŒÿÿÿÄœ   Ã‰éÿÿÿ‰,$‰T$è    éˆşÿÿè    ‰é%şÿÿè    é_ıÿÿ&      j  type.[]string    
+  "runtime.makeslice   Š
+è  runtime.duffzero   ˜  (type.net/http.Header   º
+  &runtime.mapiterinit   ¢
+  strings.ToLower   †  6runtime.writeBarrierEnabled   Ä
+  &runtime.mapiternext   ˜
+  sort.Strings   Ô  type.[1]uint8   Ş
+  "runtime.newobject   ô  """.statictmp_0160   ô       ¨
+  2runtime.stringtoslicebyte    	       €
+
+  .runtime.writebarrierptr   ”
+
+  $runtime.panicindex   °
+
+  0runtime.morestack_noctxt    ¸  &"".autotmp_0159 §type.[]uint8 "".autotmp_0158  type.string "".autotmp_0157  type.*string "".autotmp_0156 ïtype.int "".autotmp_0155  type.int "".autotmp_0154  type.[]uint8 "".autotmp_0153  type.[]string "".autotmp_0152  type.int "".autotmp_0151 ·type.string "".autotmp_0150 _:type.map.iter[string][]string "".autotmp_0148 type.[]string "".autotmp_0147 çtype.int "".s ×type.string "".k Çtype.string "".a wtype.[]string "".i ÷type.int "".r ,type.*net/http.Request "".w type.io.Writer "".s   type.*"".Service  ¸Ğ·¸? ° P„ TMP	RUV $ OM¯cel
+' TgclocalsÂ·948a0e540dd9ee4dc893ee9411d99e55 TgclocalsÂ·3a721339f405a0cfa4454d9557435062   /home/aliaksandr/work/ivona/golang/src/github.com/bmizerany/aws4/sign.goş."".(*Service).writeBody  À  ¬e‹    ‹‰    D$Ü;A†²  ì¤   ‹„$´   1Û‰œ$€   ‰œ$„   ‰œ$ˆ   ‹h ƒı …–  Ç$    1Û‰\$‰\$è    ‹\$‰œ$€   ‹\$‰œ$„   ‹\$‰œ$ˆ   è    ‹$‹D$‹œ$€   ‰\$‹œ$„   ‰\$‹œ$ˆ   ‰\$‰D$@‰$‰L$<‹Y$ÿÓ1Û‰\$‰\$‰\$‹\$@‰$‹\$<‹[ ÿÓ‹\$‰œ$˜   ‹\$‰œ$œ   ‹\$‰œ$    1Û‰\$T‰\$X\$Tƒû „Å   Ç„$      Ç„$”      ‰œ$Œ   Ç$    œ$˜   ‰\$ÇD$    è    ‹L$‹D$‹œ$Œ   ‰L$L‰‰D$P€=     uV‰C‹œ$¬   ‰$‹œ$°   ‰\$»    ‰\$ÇD$   ‹œ$Œ   ‰\$‹œ$   ‰\$‹œ$”   ‰\$è    Ä¤   Ãs‰4$‰D$è    ëœ‰é4ÿÿÿ1Û‰\$D‰\$HÇ$    ƒÀ |$ü‹‰‹H‰Oè    \$ü‹‰$‹K‰L$è    ‹t$‰´$€   ‹l$‰¬$„   ‹T$‰”$ˆ   ‹D$‹L$‰L$H‰D$Dƒø t$‰$‰L$è    \$ü‹‰$‹K‰L$è    ‰t$t‰l$x‰T$|Ç$    è    ‹|$‰ùƒÿ „&  1Àè    ‰L$(‹l$x‰i‹l$|‰i‹l$t€=     …ç   ‰)‰L$(‹    1í9è„¬   ‹T$(‰D$d‰T$h1Û‰\$,‰\$01Û‰\$l‰\$p‰D$4‰D$l‰T$8‰T$pÇ$    ÇD$    ÇD$    \$l‰\$ÇD$    è    ‹L$‹D$‰L$\‰D$`‹œ$´   ƒû t0‰L$,‰K ‰D$0€=     u‰C$éıÿÿs$‰4$‰D$è    éúüÿÿ‰ëÌÇ$    ÇD$    ÇD$    è    ‹D$é/ÿÿÿ‰$‰l$è    ‹L$(éÿÿÿ‰éÓşÿÿè    é*üÿÿB      ¸
+  2runtime.stringtoslicebyte   „
+  "crypto/sha256.New   ø       ´       è  type.[]uint8   ˜
+  runtime.convT2E   Ö  6runtime.writeBarrierEnabled   –  go.string."%x"   ú
+  fmt.Fprintf   ¦
+  .runtime.writebarrierptr   Ú  type.io.Reader   ˆ
+  runtime.convI2I   ´
+  "io/ioutil.ReadAll   ¸	
+  runtime.convI2E   ä	
+  runtime.gopanic   
+  "type.bytes.Buffer   ˜
+
+  "runtime.newobject   Ä
+
+Ô  runtime.duffzero   ü
+  6runtime.writeBarrierEnabled   ¢  >go.itab.*bytes.Buffer.io.Reader   ¤  0type.io/ioutil.nopCloser   ´  $type.io.ReadCloser   Ä  Rgo.itab.io/ioutil.nopCloser.io.ReadCloser   î
+  runtime.convT2I   È  6runtime.writeBarrierEnabled   ü
+  .runtime.writebarrierptr   œ  $type.*bytes.Buffer   ¬  type.io.Reader   ¼  >go.itab.*bytes.Buffer.io.Reader   Æ
+   runtime.typ2Itab   ğ
+  .runtime.writebarrierptr   š
+  0runtime.morestack_noctxt    È  &"".autotmp_0178 ¯"type.interface {} "".autotmp_0177 Ÿ(type.[1]interface {} "".autotmp_0174 /&type.[]interface {} "".autotmp_0173 $type.io.ReadCloser "".autotmp_0171 type.io.Reader "".autotmp_0170 ÷$type.*bytes.Buffer "".autotmp_0169  $type.*bytes.Buffer "".autotmp_0168 type.[]uint8 "".autotmp_0167 o0type.io/ioutil.nopCloser "".autotmp_0166  $type.*bytes.Buffer "".~r0 ï$type.io.ReadCloser io/ioutil.rÂ·2 ßtype.io.Reader bytes.bufÂ·2 _type.[]uint8 "".h Ïtype.hash.Hash "".err ¿type.error "".b Gtype.[]uint8 "".r ,type.*net/http.Request "".w type.io.Writer "".s   type.*"".Service  È§ÇÈ˜ à T¢'71ƒ
+a	$öE : [&;	qq1ˆ«G%> TgclocalsÂ·2e1bf46b5fcbe5d44bfd3cc06dee2b85 TgclocalsÂ·16e863260cc16872bb6e04976a417f1d   /home/aliaksandr/work/ivona/golang/src/github.com/bmizerany/aws4/sign.goş,"".(*Service).writeURI  €  ğe‹    ‹‰    ;a†Ø  ƒìL‹\$\‹k‰,$è    ‹L$\‹\$‰\$0‹t$‹i‹]0ƒû t‹i‹M0‰ğ)ÈH9ğ‡‘  ‰Æ‹|$0‰|$ ‰t$4»    ‰\$(¹   ‰t$$‰L$,9ÎŒW  ‰ò)Ê9ò‡R  ‰õ)Õ‰øƒı tĞ‰ï‰D$89Í…0  ‹l$8‰,$‰|$<‰|$‹l$(‰l$‰L$è    ‹t$4¶\$€û „ş   ¸   ˆD$‹\$0‰$‰t$è    ‹T$‹L$ƒù…‹   ‰T$0‰$‰L$4‰L$½    ‰l$ÇD$   è    ‹T$0‹L$4¶\$€û tTÇ$    ‰T$0‰T$‰L$4‰L$è    ‹T$‹L$‹D$‰T$@‰T$‰L$D‰L$‰D$H‰D$‹\$X‰$‹\$T‹[ÿÓƒÄLÃ€|$ t¥‰T$0‰L$4Ç$    ‰T$8‰T$‰L$<‰L$»    ‰\$ÇD$   è    ‹T$‹L$écÿÿÿ1Àé ÿÿÿè    è    è    éşÿÿ      H
+  2net/url.(*URL).RequestURI   Ê  go.string."/"   Š
+   runtime.eqstring   à
+  &path/filepath.Clean   ª  go.string."/"   Ì
+   runtime.eqstring   ¨
+  2runtime.stringtoslicebyte   ”       î  go.string."/"   
+  *runtime.concatstring2   Â
+  $runtime.panicslice   Ğ
+  $runtime.panicslice   Ş
+  0runtime.morestack_noctxt    ˜   "".autotmp_0196 type.[]uint8 "".autotmp_0195  type.string "".autotmp_0194 'type.string "".autotmp_0193  type.int "".autotmp_0191  type.int "".autotmp_0190  type.int "".autotmp_0189  type.int "".autotmp_0188  type.int "".autotmp_0186  type.int "strings.suffixÂ·3 Gtype.string strings.sÂ·2 Wtype.string "".slash Ytype.bool "".path 7type.string "".r ,type.*net/http.Request "".w type.io.Writer "".s   type.*"".Service ˜ö—˜p € BÊŒ@P=	  #¡+6.­ TgclocalsÂ·d328a7abb0999b61696a094998652cfe TgclocalsÂ·7757214d2088b3487a081da2dccb687d   /home/aliaksandr/work/ivona/golang/src/github.com/bmizerany/aws4/sign.goş4"".(*Service).writeRequest  €
+  è	e‹    ‹‰    ;a†T  ƒì(‹D$8‹h‰,$»    ‰\$ÇD$   ƒÀ@|$ü‹‰‹H‰Oè    Ç$    ‹\$8|$ü‹‰‹K‰Oè    ‹T$‹L$‹D$‰T$‰T$‰L$ ‰L$‰D$$‰D$‹\$4‰$‹\$0‹[ÿÓ‹    ‰\$‹    ‰\$‹    ‰\$‹\$4‰$‹\$0‹[ÿÓ‹\$,‰$‹\$0‰\$‹\$4‰\$‹\$8‰\$è    ‹    ‰\$‹    ‰\$‹    ‰\$‹\$4‰$‹\$0‹[ÿÓ‹\$,‰$‹\$0‰\$‹\$4‰\$‹\$8‰\$è    ‹    ‰\$‹    ‰\$‹    ‰\$‹\$4‰$‹\$0‹[ÿÓ‹\$,‰$‹\$0‰\$‹\$4‰\$‹\$8‰\$è    ‹    ‰\$‹    ‰\$‹    ‰\$‹\$4‰$‹\$0‹[ÿÓ‹    ‰\$‹    ‰\$‹    ‰\$‹\$4‰$‹\$0‹[ÿÓ‹\$,‰$‹\$0‰\$‹\$4‰\$‹\$8‰\$è    ‹    ‰\$‹    ‰\$‹    ‰\$‹\$4‰$‹\$0‹[ÿÓ‹\$,‰$‹\$0‰\$‹\$4‰\$‹\$8‰\$è    ƒÄ(Ãè    éŒıÿÿF      H   go.string."host"   
+  &net/http.Header.Set   Ì
+  2runtime.stringtoslicebyte   ¸       À  
+"".lf   Ô 
+"".lf   è 
+"".lf   ”       Ø
+  ,"".(*Service).writeURI   ä  
+"".lf   ø 
+"".lf   Œ 
+"".lf   ¸       ü
+  0"".(*Service).writeQuery   ˆ  
+"".lf   œ 
+"".lf   ° 
+"".lf   Ü        
+  2"".(*Service).writeHeader   ¬  
+"".lf   À 
+"".lf   Ô 
+"".lf   €       ˆ  
+"".lf   œ 
+"".lf   ° 
+"".lf   Ü        
+  :"".(*Service).writeHeaderList   ¬  
+"".lf   À 
+"".lf   Ô 
+"".lf   €	       Ä	
+  ."".(*Service).writeBody   Ö	
+  0runtime.morestack_noctxt    P  "".autotmp_0210 type.[]uint8 "".r ,type.*net/http.Request "".w type.io.Writer "".s   type.*"".Service PĞOP € Dä.S.$.$.$..$.$  Fº TgclocalsÂ·31b2ddfd7c7062d584469c95698a3e1d TgclocalsÂ·790e5cc5051fc0affc980ade09e929ec   /home/aliaksandr/work/ivona/golang/src/github.com/bmizerany/aws4/sign.goş>"".(*Service).writeStringToSign  à  Öe‹    ‹‰    ;a†K  ƒìlÇ$    »    ‰\$ÇD$   è    ‹T$‹L$‹D$‰T$`‰T$‰L$d‰L$‰D$h‰D$‹\$x‰$‹\$t‹[ÿÓ‹    ‰\$‹    ‰\$‹    ‰\$‹\$x‰$‹\$t‹[ÿÓ‹\$|‰$‹œ$€   ‰\$‹œ$„   ‰\$‹œ$ˆ   ‰\$»    ‰\$ÇD$   è    ‹L$‹D$Ç$    ‰L$@‰L$‰D$D‰D$è    ‹T$‹L$‹D$‰T$`‰T$‰L$d‰L$‰D$h‰D$‹\$x‰$‹\$t‹[ÿÓ‹    ‰\$‹    ‰\$‹    ‰\$‹\$x‰$‹\$t‹[ÿÓ‹\$p‰$‹\$|‰\$‹œ$€   ‰\$‹œ$„   ‰\$‹œ$ˆ   ‰\$è    ‹L$‹D$Ç$    ‰L$@‰L$‰D$D‰D$è    ‹T$‹L$‹D$‰T$`‰T$‰L$d‰L$‰D$h‰D$‹\$x‰$‹\$t‹[ÿÓ‹    ‰\$‹    ‰\$‹    ‰\$‹\$x‰$‹\$t‹[ÿÓè    ‹$‹D$Ç$    ‰L$(‰L$‰D$,‰D$è    \$|$ü‹‰‹K‰O‹\$p‰$‹œ$Œ   ‰\$è    1Û‰\$‰\$‰\$‹\$,‰$‹\$(‹[ ÿÓ‹\$‰\$T‹\$‰\$X‹\$‰\$\1Û‰\$8‰\$<\$8ƒû „¤   ÇD$L   ÇD$P   ‰\$HÇ$    \$T‰\$ÇD$    è    ‹L$‹D$‹\$H‰L$0‰‰D$4€=     uD‰C‹\$t‰$‹\$x‰\$»    ‰\$ÇD$   ‹\$H‰\$‹\$L‰\$‹\$P‰\$è    ƒÄlÃs‰4$‰D$è    ë®‰éUÿÿÿè    é•üÿÿF      B  8go.string."AWS4-HMAC-SHA256"   d
+  2runtime.stringtoslicebyte   Ğ       Ø  
+"".lf   ì 
+"".lf   € 
+"".lf   ¬       ‚  8go.string."20060102T150405Z"   ¤
+   time.Time.Format   ì
+  2runtime.stringtoslicebyte   Ø       à  
+"".lf   ô 
+"".lf   ˆ 
+"".lf   ´       š
+  &"".(*Service).creds   â
+  2runtime.stringtoslicebyte   Î       Ö  
+"".lf   ê 
+"".lf   ş 
+"".lf   ª       °
+  "crypto/sha256.New   Ì  type.io.Writer   ö
+  runtime.convI2I   Ê	
+  4"".(*Service).writeRequest   Š
+       š  type.[]uint8   Ä
+  runtime.convT2E   ü  6runtime.writeBarrierEnabled   °  go.string."%x"   ‚
+  fmt.Fprintf   ¨
+  .runtime.writebarrierptr   Ä
+  0runtime.morestack_noctxt   @Ø  "".autotmp_0225 w"type.interface {} "".autotmp_0224 g(type.[1]interface {} "".autotmp_0221 G&type.[]interface {} "".autotmp_0220 /type.[]uint8 "".autotmp_0219  type.[]uint8 "".autotmp_0218  type.string "".autotmp_0217  type.[]uint8 "".autotmp_0216 Wtype.string "".autotmp_0215 type.[]uint8 "".h ‡type.hash.Hash "".r 8,type.*net/http.Request "".t type.time.Time "".w type.io.Writer "".s   type.*"".Service Ø¯×Ø' ğ >†Q.–..FÜ   1‰K\_ TgclocalsÂ·3936804391d49cd2e7519c5f97789829 TgclocalsÂ·1ae31708a7818e69d8dcfd42ced568db   /home/aliaksandr/work/ivona/golang/src/github.com/bmizerany/aws4/sign.goş&"".(*Service).creds  €  âe‹    ‹‰    ;a†Q  ƒìd1Û‰\$|‰œ$€   ‹\$l‰$‹\$p‰\$‹\$t‰\$‹\$x‰\$»    ‰\$ÇD$   è    ‹\$‰\$ ‹T$‰T$$T$4ƒú „è   ¾    ‰×üè    ÇD$,   ÇD$0   ‰Ğ‰T$(‹l$$‰j‹l$ €=     …˜   ‰*‹\$hƒû „‚   k‰ÃƒÃ‰\$‰l$½    ‰,$è    ‹l$hƒı tW‹\$(ƒÃ ‰\$‰l$½    ‰,$è    Ç$    ‹\$(‰\$‹\$,‰\$‹\$0‰\$è    ‹\$‰\$|‹\$‰œ$€   ƒÄdÃ‰E ë¤‰éwÿÿÿ‰$‰l$è    ‹D$(éUÿÿÿ‰éÿÿÿè    éşÿÿ      Œ  (go.string."20060102"   ®
+   time.Time.Format   ò  """.statictmp_0231   ‚
+  runtime.duffcopy   Ğ  6runtime.writeBarrierEnabled   ¦  type.string   ¶
+  (runtime.typedmemmove   ğ  type.string   €
+  (runtime.typedmemmove   È
+  *runtime.concatstrings   ¦
+  .runtime.writebarrierptr   Ğ
+  0runtime.morestack_noctxt   8È  "".autotmp_0230 wtype.[]string "".autotmp_0229 _type.[6]string "".autotmp_0228 ‡type.string "".~r1 (type.string "".t type.time.Time "".s   type.*"".Service È¥ÇÈA € ¢&Á  V„I/. TgclocalsÂ·42819e75dfc0ab7a3bf5b4c699bd202a TgclocalsÂ·27c54aee0f1da65e4b487014926528c4   /home/aliaksandr/work/ivona/golang/src/github.com/bmizerany/aws4/sign.goş"".ghmac  €  €e‹    ‹‰    ;a†    ƒì$1Û‰\$@‰\$D‰\$H»    ‰$‹\$(‰\$‹\$,‰\$‹\$0‰\$è    ‹L$‹D$‹\$4‰\$‹\$8‰\$‹\$<‰\$‰D$ ‰$‰L$‹Y$ÿÓ1Û‰\$‰\$‰\$‹\$ ‰$‹\$‹[ ÿÓ‹T$‹L$‹D$‰T$@‰L$D‰D$HƒÄ$Ãè    é@ÿÿÿ      P  (crypto/sha256.NewÂ·f   
+  crypto/hmac.New   ô       °       î
+  0runtime.morestack_noctxt   HH  "".h type.hash.Hash "".~r2 0type.[]uint8 "".data type.[]uint8 "".key  type.[]uint8 HœGH
+ À ª'-(:
+  G3( TgclocalsÂ·49911706e77e6300db306d6db0912e94 TgclocalsÂ·21a8f585a14d020f181242c5256583dc   /home/aliaksandr/work/ivona/golang/src/github.com/bmizerany/aws4/sign.goş"".init  €  üe‹    ‹‰    ;a†   ƒì¶    €û t¶    €ûuƒÄÃè    Æ    è    è    è    è    è    è    è    è    è    è    è    è    è    ‹$€=     u‰    Æ    ƒÄÃ½    ‰,$‰\$è    ëâè    éBÿÿÿ0      8  "".initdoneÂ·   P  "".initdoneÂ·   l
+  "runtime.throwinit   |  "".initdoneÂ·   ˆ
+  io.init   ’
+  net/http.init   œ
+  net/url.init   ¦
+  os.init   °
+  strings.init   º
+  bytes.init   Ä
+   crypto/hmac.init   Î
+  $crypto/sha256.init   Ø
+  fmt.init   â
+  io/ioutil.init   ì
+  $path/filepath.init   ö
+  time.init   €
+  ,"".KeysFromEnvironment   ’  6runtime.writeBarrierEnabled   ¤  """.statictmp_0236   °  "".initdoneÂ·   Ä  """.statictmp_0236   Ü
+  .runtime.writebarrierptr   ê
+  0runtime.morestack_noctxt       k   ²™š™š  5‹ TgclocalsÂ·33cdeccccebe80329f1fdbee7f5874cb TgclocalsÂ·33cdeccccebe80329f1fdbee7f5874cb   /home/aliaksandr/work/ivona/golang/src/github.com/bmizerany/aws4/sign.go”/home/aliaksandr/work/ivona/golang/src/github.com/bmizerany/aws4/client.goş$type..hash."".Keys €  èe‹    ‹‰    ;av[ƒì‹\$‰$ƒ<$ tC‹\$‰\$è    ‹D$‹\$‰$ƒ<$ tƒ$‰D$‰D$è    ‹\$‰\$ƒÄÃ‰    ëÛ‰    ëµè    ëŒ      V
+  runtime.strhash   š
+  runtime.strhash   Ü
+  0runtime.morestack_noctxt     "".~r2 type.uintptr "".h type.uintptr "".p  type.*"".Keys G# € € 
+ *V TgclocalsÂ·0b86ef39f3fed835f14ba5f4d7c62fa2 TgclocalsÂ·33cdeccccebe80329f1fdbee7f5874cb   ”/home/aliaksandr/work/ivona/golang/src/github.com/bmizerany/aws4/client.goş type..eq."".Keys    Œe‹    ‹‰    ;a†æ   ƒì$‹\$(ƒû „Ï   ‹+‰l$‹s‹\$,ƒû „²   ‹;‹S9Ö…œ   ‹l$‰,$‰t$ ‰t$‰|$‰|$‰T$‰T$è    ¶\$€û tn‹\$(ƒû ta‹{‹S‹\$,ƒû tN‹k‰l$‹s9òu7‰|$‰<$‰T$‰T$‹l$‰l$‰t$ ‰t$è    ¶\$€û t	ÆD$0ƒÄ$ÃÆD$0 ƒÄ$Ã‰ë®‰ë›ÆD$0 ƒÄ$Ã‰éGÿÿÿ‰é*ÿÿÿè    éúşÿÿ      Ò
+   runtime.eqstring   ú
+   runtime.eqstring   ú
+  0runtime.morestack_noctxt   H  "".autotmp_0242  type.string "".autotmp_0241  type.string "".autotmp_0240 type.string "".autotmp_0239 type.string "".~r2 type.bool "".q type.*"".Keys "".p  type.*"".Keys $HºGHGHGH"    h¨ TgclocalsÂ·3bb21ca8fe1d99a3e492463bd711418a TgclocalsÂ·a8eabfc4a4514ed6b3b0c61e9680e440   ”/home/aliaksandr/work/ivona/golang/src/github.com/bmizerany/aws4/client.goş*type..hash."".Service €  èe‹    ‹‰    ;av[ƒì‹\$‰$ƒ<$ tC‹\$‰\$è    ‹D$‹\$‰$ƒ<$ tƒ$‰D$‰D$è    ‹\$‰\$ƒÄÃ‰    ëÛ‰    ëµè    ëŒ      V
+  runtime.strhash   š
+  runtime.strhash   Ü
+  0runtime.morestack_noctxt     "".~r2 type.uintptr "".h type.uintptr "".p   type.*"".Service G# € € 
+ *V TgclocalsÂ·0b86ef39f3fed835f14ba5f4d7c62fa2 TgclocalsÂ·33cdeccccebe80329f1fdbee7f5874cb   ”/home/aliaksandr/work/ivona/golang/src/github.com/bmizerany/aws4/client.goş&type..eq."".Service    Œe‹    ‹‰    ;a†æ   ƒì$‹\$(ƒû „Ï   ‹+‰l$‹s‹\$,ƒû „²   ‹;‹S9Ö…œ   ‹l$‰,$‰t$ ‰t$‰|$‰|$‰T$‰T$è    ¶\$€û tn‹\$(ƒû ta‹{‹S‹\$,ƒû tN‹k‰l$‹s9òu7‰|$‰<$‰T$‰T$‹l$‰l$‰t$ ‰t$è    ¶\$€û t	ÆD$0ƒÄ$ÃÆD$0 ƒÄ$Ã‰ë®‰ë›ÆD$0 ƒÄ$Ã‰éGÿÿÿ‰é*ÿÿÿè    éúşÿÿ      Ò
+   runtime.eqstring   ú
+   runtime.eqstring   ú
+  0runtime.morestack_noctxt   H  "".autotmp_0250  type.string "".autotmp_0249  type.string "".autotmp_0248 type.string "".autotmp_0247 type.string "".~r2 type.bool "".q  type.*"".Service "".p   type.*"".Service $HºGHGHGH"    h¨ TgclocalsÂ·3bb21ca8fe1d99a3e492463bd711418a TgclocalsÂ·a8eabfc4a4514ed6b3b0c61e9680e440   ”/home/aliaksandr/work/ivona/golang/src/github.com/bmizerany/aws4/client.goş4type..hash.[1]interface {} €  øe‹    ‹‰    ;avcƒì‹L$1ÀÇD$   ‹l$9è}>‰D$‰ÅÁÁiÉÍvºÂ‹t$ƒş t.Áåî‰4$‰L$‰L$è    ‹L$‹D$@‹l$9è|Â‰L$ ƒÄÃ‰ëÎè    ë„      ¨
+  (runtime.nilinterhash   ì
+  0runtime.morestack_noctxt   (  
+"".autotmp_0256 type.int "".autotmp_0255 type.int "".~r2 type.uintptr "".h type.uintptr "".p  *type.*[1]interface {} (['( € € 
+ S- TgclocalsÂ·0b86ef39f3fed835f14ba5f4d7c62fa2 TgclocalsÂ·33cdeccccebe80329f1fdbee7f5874cb   ”/home/aliaksandr/work/ivona/golang/src/github.com/bmizerany/aws4/client.goş0type..eq.[1]interface {} €  €e‹    ‹‰    ;a†    ƒì,1ÀÇD$   ‹l$9è}q‰D$‹t$4ƒş tz‰ÅÁåî‹>‹^‰\$(‹t$0ƒş t]‰ÅÁåî‹‹v9úuD‰T$‰$‰t$ ‰t$‰|$$‰|$‹l$(‰l$è    ¶\$€û t‹D$@‹l$9è|ÆD$8ƒÄ,ÃÆD$8 ƒÄ,Ã‰ëŸ‰ë‚è    é@ÿÿÿ      ‚
+  runtime.efaceeq   î
+  0runtime.morestack_noctxt   X  "".autotmp_0262 "type.interface {} "".autotmp_0261 "type.interface {} "".autotmp_0260 /type.int "".autotmp_0259 'type.int "".~r2 type.bool "".q *type.*[1]interface {} "".p  *type.*[1]interface {} X‹WXWX À À  €@ TgclocalsÂ·3bb21ca8fe1d99a3e492463bd711418a TgclocalsÂ·a8eabfc4a4514ed6b3b0c61e9680e440   ”/home/aliaksandr/work/ivona/golang/src/github.com/bmizerany/aws4/client.goş(type..hash.[8]string €  øe‹    ‹‰    ;avcƒì‹L$1ÀÇD$   ‹l$9è}>‰D$‰ÅÁÁiÉÍvºÂ‹t$ƒş t.Áåî‰4$‰L$‰L$è    ‹L$‹D$@‹l$9è|Â‰L$ ƒÄÃ‰ëÎè    ë„      ¨
+  runtime.strhash   ì
+  0runtime.morestack_noctxt   (  
+"".autotmp_0268 type.int "".autotmp_0267 type.int "".~r2 type.uintptr "".h type.uintptr "".p  type.*[8]string (['( € € 
+ S- TgclocalsÂ·0b86ef39f3fed835f14ba5f4d7c62fa2 TgclocalsÂ·33cdeccccebe80329f1fdbee7f5874cb   ”/home/aliaksandr/work/ivona/golang/src/github.com/bmizerany/aws4/client.goş$type..eq.[8]string    e‹    ‹‰    ;a†§   ƒì,1ÀÇD$   ‹l$9è}u‰D$‹t$0ƒş t~‰ÅÁåî‹‰\$$‹~‹t$4ƒş ta‰ÅÁåî‹‰\$‹V9×uD‹l$$‰,$‰|$(‰|$‹l$‰l$‰T$ ‰T$è    ¶\$€û t‹D$@‹l$9è|‹ÆD$8ƒÄ,ÃÆD$8 ƒÄ,Ã‰ë›‰é{ÿÿÿè    é9ÿÿÿ      Š
+   runtime.eqstring   ü
+  0runtime.morestack_noctxt   X  "".autotmp_0274 type.string "".autotmp_0273 type.string "".autotmp_0272 /type.int "".autotmp_0271 'type.int "".~r2 type.bool "".q type.*[8]string "".p  type.*[8]string XWXWX Ğ Ğ  „L TgclocalsÂ·3bb21ca8fe1d99a3e492463bd711418a TgclocalsÂ·a8eabfc4a4514ed6b3b0c61e9680e440   ”/home/aliaksandr/work/ivona/golang/src/github.com/bmizerany/aws4/client.goş(type..hash.[6]string €  øe‹    ‹‰    ;avcƒì‹L$1ÀÇD$   ‹l$9è}>‰D$‰ÅÁÁiÉÍvºÂ‹t$ƒş t.Áåî‰4$‰L$‰L$è    ‹L$‹D$@‹l$9è|Â‰L$ ƒÄÃ‰ëÎè    ë„      ¨
+  runtime.strhash   ì
+  0runtime.morestack_noctxt   (  
+"".autotmp_0280 type.int "".autotmp_0279 type.int "".~r2 type.uintptr "".h type.uintptr "".p  type.*[6]string (['( € € 
+ S- TgclocalsÂ·0b86ef39f3fed835f14ba5f4d7c62fa2 TgclocalsÂ·33cdeccccebe80329f1fdbee7f5874cb   ”/home/aliaksandr/work/ivona/golang/src/github.com/bmizerany/aws4/client.goş$type..eq.[6]string    e‹    ‹‰    ;a†§   ƒì,1ÀÇD$   ‹l$9è}u‰D$‹t$0ƒş t~‰ÅÁåî‹‰\$$‹~‹t$4ƒş ta‰ÅÁåî‹‰\$‹V9×uD‹l$$‰,$‰|$(‰|$‹l$‰l$‰T$ ‰T$è    ¶\$€û t‹D$@‹l$9è|‹ÆD$8ƒÄ,ÃÆD$8 ƒÄ,Ã‰ë›‰é{ÿÿÿè    é9ÿÿÿ      Š
+   runtime.eqstring   ü
+  0runtime.morestack_noctxt   X  "".autotmp_0286 type.string "".autotmp_0285 type.string "".autotmp_0284 /type.int "".autotmp_0283 'type.int "".~r2 type.bool "".q type.*[6]string "".p  type.*[6]string XWXWX Ğ Ğ  „L TgclocalsÂ·3bb21ca8fe1d99a3e492463bd711418a TgclocalsÂ·a8eabfc4a4514ed6b3b0c61e9680e440   ”/home/aliaksandr/work/ivona/golang/src/github.com/bmizerany/aws4/client.goş<go.string.hdr."AWS_ACCESS_KEY"             4go.string."AWS_ACCESS_KEY"   ş4go.string."AWS_ACCESS_KEY"    AWS_ACCESS_KEY  ş<go.string.hdr."AWS_SECRET_KEY"             4go.string."AWS_SECRET_KEY"   ş4go.string."AWS_SECRET_KEY"    AWS_SECRET_KEY  şTgclocalsÂ·69330bf7bffe831e4a4f0e4ba1e73cde 8  8             
+          şTgclocalsÂ·4d8f4351ae24f7a880f472246ed2ba20 8  8                           şTgclocalsÂ·33cdeccccebe80329f1fdbee7f5874cb           şTgclocalsÂ·0394bc1b5f235af63e0d6b6285a75ca4      	   5    şTgclocalsÂ·33cdeccccebe80329f1fdbee7f5874cb           şTgclocalsÂ·b4c25e9b09fd0cf9bb429dcefe91c353             şTgclocalsÂ·33cdeccccebe80329f1fdbee7f5874cb           şTgclocalsÂ·3f5c1f818fa7055d0400cecd34057162             şTgclocalsÂ·33cdeccccebe80329f1fdbee7f5874cb           şTgclocalsÂ·1347047f6245a35b91e9a4f213167d52             ş&go.string.hdr."GET"             go.string."GET"   şgo.string."GET"   GET  şTgclocalsÂ·33cdeccccebe80329f1fdbee7f5874cb           şTgclocalsÂ·d98f60bd8519d0c68364b2a1d83af357             ş(go.string.hdr."HEAD"              go.string."HEAD"   ş go.string."HEAD"   
+HEAD  şTgclocalsÂ·33cdeccccebe80329f1fdbee7f5874cb           şTgclocalsÂ·d98f60bd8519d0c68364b2a1d83af357             ş(go.string.hdr."POST"              go.string."POST"   ş go.string."POST"   
+POST  ş8go.string.hdr."Content-Type"             0go.string."Content-Type"   ş0go.string."Content-Type"    Content-Type  şTgclocalsÂ·0c8aa8e80191a30eac23f1a218103f16                   şTgclocalsÂ·76db95b748eb9ac765b58fa2e4cf2b24        
+   k   k    ş0Bgo.itab.*strings.Reader.io.Reader     şbgo.string.hdr."application/x-www-form-urlencoded"       !      Zgo.string."application/x-www-form-urlencoded"   şZgo.string."application/x-www-form-urlencoded" H  Dapplication/x-www-form-urlencoded  şTgclocalsÂ·6013db99caf2bb60e55bc0c016a4e7e9 (  (                 şTgclocalsÂ·0fe6cb1d8f40b738d38d37477ad84346 (  (                ş(go.string.hdr."AWS4"              go.string."AWS4"   ş go.string."AWS4"   
+AWS4  ş0go.string.hdr."20060102"             (go.string."20060102"   ş(go.string."20060102"   20060102  ş8go.string.hdr."aws4_request"             0go.string."aws4_request"   ş0go.string."aws4_request"    aws4_request  şTgclocalsÂ·a2104d423e44b7840e1e949d7f9b7bea (  (                 şTgclocalsÂ·8d5b84c32c19bce51a2c11bd072208b1 (  (   	   #   #   #    ş"go.string.hdr."."             go.string."."   şgo.string."."   .  şPgo.string.hdr."Invalid AWS Endpoint: %s"             Hgo.string."Invalid AWS Endpoint: %s"   şHgo.string."Invalid AWS Endpoint: %s" 8  2Invalid AWS Endpoint: %s  şTgclocalsÂ·dd7e866ac2fa97357857e45055126971 @  @                (  !(  (   şTgclocalsÂ·a68b09a48716afad7ca7a02fe6add474 @  @                         ş0>go.itab.*bytes.Buffer.io.Writer     ş(go.string.hdr."Date"              go.string."Date"   ş go.string."Date"   
+Date  şZgo.string.hdr."Mon, 02 Jan 2006 15:04:05 GMT"             Rgo.string."Mon, 02 Jan 2006 15:04:05 GMT"   şRgo.string."Mon, 02 Jan 2006 15:04:05 GMT" @  <Mon, 02 Jan 2006 15:04:05 GMT  ş@go.string.hdr."20060102T150405Z"             8go.string."20060102T150405Z"   ş8go.string."20060102T150405Z" (  "20060102T150405Z  şBgo.string.hdr."AWS4-HMAC-SHA256 "             :go.string."AWS4-HMAC-SHA256 "   ş:go.string."AWS4-HMAC-SHA256 " (  $AWS4-HMAC-SHA256   ş6go.string.hdr."Credential="             .go.string."Credential="   ş.go.string."Credential="   Credential=  ş"go.string.hdr."/"             go.string."/"   şgo.string."/"   /  ş<go.string.hdr."SignedHeaders="             4go.string."SignedHeaders="   ş4go.string."SignedHeaders="    SignedHeaders=  ş$go.string.hdr."%x"             go.string."%x"   şgo.string."%x"   %x  ş4go.string.hdr."Signature="       
+      ,go.string."Signature="   ş,go.string."Signature="   Signature=  ş*go.string.hdr."<nil>"             "go.string."<nil>"   ş"go.string."<nil>"   <nil>  ş:go.string.hdr."Authorization"             2go.string."Authorization"   ş2go.string."Authorization"    Authorization  şTgclocalsÂ·28f74711dd42e3614c58ecf92b4044cf Ğ  Ğ   ,                         À      À      Á      Â       Ã               ƒ                 şTgclocalsÂ·241579fc4a2679a16a513edfd2f385e5 p  p                                           ş"go.string.hdr."="             go.string."="   şgo.string."="   =  şTgclocalsÂ·f59bcc4cf141ffdc619e86dadea84cee     	   !                    ä     ä    ! à    ! ä    ¡ à    	               şTgclocalsÂ·9c79a167ccfc974839491afbe2b5ebd1 X  X	                                  ş"go.string.hdr.","             go.string.","   şgo.string.","   ,  ş"go.string.hdr.":"             go.string.":"   şgo.string.":"   :  şTgclocalsÂ·0569eea62fd2e8bdd2bc83905f8a3f72 X  X	             òò ò ò  ğ          şTgclocalsÂ·9c79a167ccfc974839491afbe2b5ebd1 X  X	                                  şTgclocalsÂ·3a721339f405a0cfa4454d9557435062 @  @            ÿ   ÿ            şTgclocalsÂ·948a0e540dd9ee4dc893ee9411d99e55 @  @                         ş0>go.itab.*bytes.Buffer.io.Reader     ş0Rgo.itab.io/ioutil.nopCloser.io.ReadCloser     şTgclocalsÂ·16e863260cc16872bb6e04976a417f1d P  P            H  @   F   @ `        şTgclocalsÂ·2e1bf46b5fcbe5d44bfd3cc06dee2b85 P  P                               şTgclocalsÂ·7757214d2088b3487a081da2dccb687d                   şTgclocalsÂ·d328a7abb0999b61696a094998652cfe                  ş(go.string.hdr."host"              go.string."host"   ş go.string."host"   
+host  şTgclocalsÂ·790e5cc5051fc0affc980ade09e929ec              şTgclocalsÂ·31b2ddfd7c7062d584469c95698a3e1d             ş@go.string.hdr."AWS4-HMAC-SHA256"             8go.string."AWS4-HMAC-SHA256"   ş8go.string."AWS4-HMAC-SHA256" (  "AWS4-HMAC-SHA256  şTgclocalsÂ·1ae31708a7818e69d8dcfd42ced568db 0  0             0	  0   şTgclocalsÂ·3936804391d49cd2e7519c5f97789829 0  0      Ç   Ç   Ç   Ç    ş:go.string.hdr."/aws4_request"             2go.string."/aws4_request"   ş2go.string."/aws4_request"    /aws4_request  şTgclocalsÂ·27c54aee0f1da65e4b487014926528c4 (  (          ¤ª   ª   şTgclocalsÂ·42819e75dfc0ab7a3bf5b4c699bd202a (  (                şTgclocalsÂ·21a8f585a14d020f181242c5256583dc                   şTgclocalsÂ·49911706e77e6300db306d6db0912e94        	   	   	    şTgclocalsÂ·33cdeccccebe80329f1fdbee7f5874cb           şTgclocalsÂ·33cdeccccebe80329f1fdbee7f5874cb           ş. "".DefaultClient  type.*"".Client        """.statictmp_0236   ş.
+"".lf  type.[]uint8              """.statictmp_0237   ş""".statictmp_0069  type.[2]uint8 ,  ş""".statictmp_0075  type.[2]uint8 ,  ş""".statictmp_0119  type.[1]uint8 & ş""".statictmp_0160  type.[1]uint8 ; ş""".statictmp_0231  `type.[6]string `                                               go.string."/"   0  go.string."/"   P  2go.string."/aws4_request"   ş.""".statictmp_0236  type."".Client   ş0""".statictmp_0237  type.[1]uint8 
+ ş0"".initdoneÂ·  type.uint8   ş2"".KeysFromEnvironmentÂ·f          ,"".KeysFromEnvironment   ş"".PostÂ·f          "".Post   ş"".PostFormÂ·f          "".PostForm   ş,"".(*Client).clientÂ·f          &"".(*Client).client   ş$"".(*Client).DoÂ·f          "".(*Client).Do   ş&"".(*Client).GetÂ·f           "".(*Client).Get   ş("".(*Client).HeadÂ·f          """.(*Client).Head   ş("".(*Client).PostÂ·f          """.(*Client).Post   ş0"".(*Client).PostFormÂ·f          *"".(*Client).PostForm   ş$"".(*Keys).signÂ·f          "".(*Keys).sign   ş"".SignÂ·f          "".Sign   ş*"".(*Service).SignÂ·f          $"".(*Service).Sign   ş6"".(*Service).writeQueryÂ·f          0"".(*Service).writeQuery   ş8"".(*Service).writeHeaderÂ·f          2"".(*Service).writeHeader   ş@"".(*Service).writeHeaderListÂ·f          :"".(*Service).writeHeaderList   ş4"".(*Service).writeBodyÂ·f          ."".(*Service).writeBody   ş2"".(*Service).writeURIÂ·f          ,"".(*Service).writeURI   ş:"".(*Service).writeRequestÂ·f          4"".(*Service).writeRequest   şD"".(*Service).writeStringToSignÂ·f          >"".(*Service).writeStringToSign   ş,"".(*Service).credsÂ·f          &"".(*Service).creds   ş"".ghmacÂ·f          "".ghmac   ş"".initÂ·f          "".init   şTgclocalsÂ·33cdeccccebe80329f1fdbee7f5874cb           şTgclocalsÂ·0b86ef39f3fed835f14ba5f4d7c62fa2             şTgclocalsÂ·a8eabfc4a4514ed6b3b0c61e9680e440              şTgclocalsÂ·3bb21ca8fe1d99a3e492463bd711418a             ş,type..hashfunc."".Keys          $type..hash."".Keys   ş(type..eqfunc."".Keys           type..eq."".Keys   ş"type..alg."".Keys              ,type..hashfunc."".Keys     (type..eqfunc."".Keys   ş"runtime.gcbits.01    ş4go.string.hdr."*aws4.Keys"       
+      ,go.string."*aws4.Keys"   ş,go.string."*aws4.Keys"   *aws4.Keys  şTgclocalsÂ·33cdeccccebe80329f1fdbee7f5874cb           şTgclocalsÂ·0b86ef39f3fed835f14ba5f4d7c62fa2             şTgclocalsÂ·a8eabfc4a4514ed6b3b0c61e9680e440              şTgclocalsÂ·3bb21ca8fe1d99a3e492463bd711418a             ş2type..hashfunc."".Service          *type..hash."".Service   ş.type..eqfunc."".Service          &type..eq."".Service   ş(type..alg."".Service              2type..hashfunc."".Service     .type..eqfunc."".Service   ş"runtime.gcbits.05    ş8go.string.hdr."aws4.Service"             0go.string."aws4.Service"   ş0go.string."aws4.Service"    aws4.Service  ş(go.string.hdr."Name"              go.string."Name"   ş go.string."Name"   
+Name  ş,go.string.hdr."Region"             $go.string."Region"   ş$go.string."Region"   Region  ş.go.string.hdr."Service"             &go.string."Service"   ş&go.string."Service"   Service  şRgo.string.hdr."github.com/bmizerany/aws4"             Jgo.string."github.com/bmizerany/aws4"   şJgo.string."github.com/bmizerany/aws4" 8  4github.com/bmizerany/aws4  ş"go.importpath."".             Jgo.string."github.com/bmizerany/aws4"   ştype."".Service  à  à      º]†c                                                                                                 (type..alg."".Service   (  "runtime.gcbits.05   0  8go.string.hdr."aws4.Service"   @   type.*"".Service   H  "runtime.zerovalue   Ph type."".Service   h  (go.string.hdr."Name"   x  type.string     ,go.string.hdr."Region"      type.string   8¸ type."".Service   ¸  .go.string.hdr."Service"   À  "go.importpath."".   Èà type."".Service   ş:go.string.hdr."*aws4.Service"             2go.string."*aws4.Service"   ş2go.string."*aws4.Service"    *aws4.Service  şˆgo.string.hdr."func(*aws4.Service, *aws4.Keys, *http.Request) error"       4      €go.string."func(*aws4.Service, *aws4.Keys, *http.Request) error"   ş€go.string."func(*aws4.Service, *aws4.Keys, *http.Request) error" p  jfunc(*aws4.Service, *aws4.Keys, *http.Request) error  şrtype.func(*"".Service, *"".Keys, *net/http.Request) error ¨  ¨      (Òèœ 3                                                                 °  runtime.algarray   (  "runtime.gcbits.01   0  ˆgo.string.hdr."func(*aws4.Service, *aws4.Keys, *http.Request) error"   @  „go.weak.type.*func(*"".Service, *"".Keys, *net/http.Request) error   H  "runtime.zerovalue   Xˆ rtype.func(*"".Service, *"".Keys, *net/http.Request) error   p  rtype.func(*"".Service, *"".Keys, *net/http.Request) error   ˆ   type.*"".Service     type.*"".Keys   ˜  ,type.*net/http.Request      type.error   şêgo.typelink.func(*aws4.Service, *aws4.Keys, *http.Request) error	func(*"".Service, *"".Keys, *net/http.Request) error          rtype.func(*"".Service, *"".Keys, *net/http.Request) error   şjgo.string.hdr."func(*aws4.Service, time.Time) string"       %      bgo.string."func(*aws4.Service, time.Time) string"   şbgo.string."func(*aws4.Service, time.Time) string" P  Lfunc(*aws4.Service, time.Time) string  şPtype.func(*"".Service, time.Time) string           õÍn 3                                                             °  runtime.algarray   (  "runtime.gcbits.01   0  jgo.string.hdr."func(*aws4.Service, time.Time) string"   @  bgo.weak.type.*func(*"".Service, time.Time) string   H  "runtime.zerovalue   Xˆ Ptype.func(*"".Service, time.Time) string   p˜ Ptype.func(*"".Service, time.Time) string   ˆ   type.*"".Service     type.time.Time   ˜  type.string   şªgo.typelink.func(*aws4.Service, time.Time) string	func(*"".Service, time.Time) string          Ptype.func(*"".Service, time.Time) string   şzgo.string.hdr."func(*aws4.Service, io.Writer, *http.Request)"       -      rgo.string."func(*aws4.Service, io.Writer, *http.Request)"   şrgo.string."func(*aws4.Service, io.Writer, *http.Request)" `  \func(*aws4.Service, io.Writer, *http.Request)  şhtype.func(*"".Service, io.Writer, *net/http.Request)           j¦ÀÄ 3                                                               °  runtime.algarray   (  "runtime.gcbits.01   0  zgo.string.hdr."func(*aws4.Service, io.Writer, *http.Request)"   @  zgo.weak.type.*func(*"".Service, io.Writer, *net/http.Request)   H  "runtime.zerovalue   Xˆ htype.func(*"".Service, io.Writer, *net/http.Request)   p  htype.func(*"".Service, io.Writer, *net/http.Request)   ˆ   type.*"".Service     type.io.Writer   ˜  ,type.*net/http.Request   şÒgo.typelink.func(*aws4.Service, io.Writer, *http.Request)	func(*"".Service, io.Writer, *net/http.Request)          htype.func(*"".Service, io.Writer, *net/http.Request)   şgo.string.hdr."func(*aws4.Service, io.Writer, time.Time, *http.Request)"       8      ˆgo.string."func(*aws4.Service, io.Writer, time.Time, *http.Request)"   şˆgo.string."func(*aws4.Service, io.Writer, time.Time, *http.Request)" x  rfunc(*aws4.Service, io.Writer, time.Time, *http.Request)  ş~type.func(*"".Service, io.Writer, time.Time, *net/http.Request) ¨  ¨      	ôqo 3                                                                   °  runtime.algarray   (  "runtime.gcbits.01   0  go.string.hdr."func(*aws4.Service, io.Writer, time.Time, *http.Request)"   @  go.weak.type.*func(*"".Service, io.Writer, time.Time, *net/http.Request)   H  "runtime.zerovalue   Xˆ ~type.func(*"".Service, io.Writer, time.Time, *net/http.Request)   p¨ ~type.func(*"".Service, io.Writer, time.Time, *net/http.Request)   ˆ   type.*"".Service     type.io.Writer   ˜  type.time.Time      ,type.*net/http.Request   şşgo.typelink.func(*aws4.Service, io.Writer, time.Time, *http.Request)	func(*"".Service, io.Writer, time.Time, *net/http.Request)          ~type.func(*"".Service, io.Writer, time.Time, *net/http.Request)   ş(go.string.hdr."Sign"              go.string."Sign"   ş go.string."Sign"   
+Sign  şjgo.string.hdr."func(*aws4.Keys, *http.Request) error"       %      bgo.string."func(*aws4.Keys, *http.Request) error"   şbgo.string."func(*aws4.Keys, *http.Request) error" P  Lfunc(*aws4.Keys, *http.Request) error  şXtype.func(*"".Keys, *net/http.Request) error           ÷Aà• 3                                                             °  runtime.algarray   (  "runtime.gcbits.01   0  jgo.string.hdr."func(*aws4.Keys, *http.Request) error"   @  jgo.weak.type.*func(*"".Keys, *net/http.Request) error   H  "runtime.zerovalue   Xˆ Xtype.func(*"".Keys, *net/http.Request) error   p˜ Xtype.func(*"".Keys, *net/http.Request) error   ˆ  type.*"".Keys     ,type.*net/http.Request   ˜  type.error   ş²go.typelink.func(*aws4.Keys, *http.Request) error	func(*"".Keys, *net/http.Request) error          Xtype.func(*"".Keys, *net/http.Request) error   ş*go.string.hdr."creds"             "go.string."creds"   ş"go.string."creds"   creds  şLgo.string.hdr."func(time.Time) string"             Dgo.string."func(time.Time) string"   şDgo.string."func(time.Time) string" 0  .func(time.Time) string  ş6type.func(time.Time) string ˜  ˜      Ãš‰« 3                                                         °  runtime.algarray   (  "runtime.gcbits.01   0  Lgo.string.hdr."func(time.Time) string"   @  Hgo.weak.type.*func(time.Time) string   H  "runtime.zerovalue   Xˆ 6type.func(time.Time) string   p 6type.func(time.Time) string   ˆ  type.time.Time     type.string   şrgo.typelink.func(time.Time) string	func(time.Time) string          6type.func(time.Time) string   ş2go.string.hdr."writeBody"       	      *go.string."writeBody"   ş*go.string."writeBody"   writeBody  ş\go.string.hdr."func(io.Writer, *http.Request)"             Tgo.string."func(io.Writer, *http.Request)"   şTgo.string."func(io.Writer, *http.Request)" @  >func(io.Writer, *http.Request)  şNtype.func(io.Writer, *net/http.Request) ˜  ˜      
+Ì` 3                                                           °  runtime.algarray   (  "runtime.gcbits.01   0  \go.string.hdr."func(io.Writer, *http.Request)"   @  `go.weak.type.*func(io.Writer, *net/http.Request)   H  "runtime.zerovalue   Xˆ Ntype.func(io.Writer, *net/http.Request)   p˜ Ntype.func(io.Writer, *net/http.Request)   ˆ  type.io.Writer     ,type.*net/http.Request   şšgo.typelink.func(io.Writer, *http.Request)	func(io.Writer, *net/http.Request)          Ntype.func(io.Writer, *net/http.Request)   ş6go.string.hdr."writeHeader"             .go.string."writeHeader"   ş.go.string."writeHeader"   writeHeader  ş>go.string.hdr."writeHeaderList"             6go.string."writeHeaderList"   ş6go.string."writeHeaderList"     writeHeaderList  ş4go.string.hdr."writeQuery"       
+      ,go.string."writeQuery"   ş,go.string."writeQuery"   writeQuery  ş8go.string.hdr."writeRequest"             0go.string."writeRequest"   ş0go.string."writeRequest"    writeRequest  şBgo.string.hdr."writeStringToSign"             :go.string."writeStringToSign"   ş:go.string."writeStringToSign" (  $writeStringToSign  şrgo.string.hdr."func(io.Writer, time.Time, *http.Request)"       )      jgo.string."func(io.Writer, time.Time, *http.Request)"   şjgo.string."func(io.Writer, time.Time, *http.Request)" X  Tfunc(io.Writer, time.Time, *http.Request)  şdtype.func(io.Writer, time.Time, *net/http.Request)           ÀÔ~ 3                                                               °  runtime.algarray   (  "runtime.gcbits.01   0  rgo.string.hdr."func(io.Writer, time.Time, *http.Request)"   @  vgo.weak.type.*func(io.Writer, time.Time, *net/http.Request)   H  "runtime.zerovalue   Xˆ dtype.func(io.Writer, time.Time, *net/http.Request)   p  dtype.func(io.Writer, time.Time, *net/http.Request)   ˆ  type.io.Writer     type.time.Time   ˜  ,type.*net/http.Request   şÆgo.typelink.func(io.Writer, time.Time, *http.Request)	func(io.Writer, time.Time, *net/http.Request)          dtype.func(io.Writer, time.Time, *net/http.Request)   ş0go.string.hdr."writeURI"             (go.string."writeURI"   ş(go.string."writeURI"   writeURI  ş type.*"".Service  °  °      #ô—— 6                                        	   	                                                                                                                                                                                                                           z @  runtime.algarray   (  "runtime.gcbits.01   0  :go.string.hdr."*aws4.Service"   @  2go.weak.type.**"".Service   H  "runtime.zerovalue   P  type."".Service   8X  type.*"".Service   h€  type.*"".Service   €  (go.string.hdr."Sign"     Xtype.func(*"".Keys, *net/http.Request) error   ˜  rtype.func(*"".Service, *"".Keys, *net/http.Request) error      $"".(*Service).Sign   ¨  $"".(*Service).Sign   °  *go.string.hdr."creds"   ¸  "go.importpath."".   À  6type.func(time.Time) string   È  Ptype.func(*"".Service, time.Time) string   Ğ  &"".(*Service).creds   Ø  &"".(*Service).creds   à  2go.string.hdr."writeBody"   è  "go.importpath."".   ğ  Ntype.func(io.Writer, *net/http.Request)   ø  htype.func(*"".Service, io.Writer, *net/http.Request)   €  ."".(*Service).writeBody   ˆ  ."".(*Service).writeBody     6go.string.hdr."writeHeader"   ˜  "go.importpath."".      Ntype.func(io.Writer, *net/http.Request)   ¨  htype.func(*"".Service, io.Writer, *net/http.Request)   °  2"".(*Service).writeHeader   ¸  2"".(*Service).writeHeader   À  >go.string.hdr."writeHeaderList"   È  "go.importpath."".   Ğ  Ntype.func(io.Writer, *net/http.Request)   Ø  htype.func(*"".Service, io.Writer, *net/http.Request)   à  :"".(*Service).writeHeaderList   è  :"".(*Service).writeHeaderList   ğ  4go.string.hdr."writeQuery"   ø  "go.importpath."".   €  Ntype.func(io.Writer, *net/http.Request)   ˆ  htype.func(*"".Service, io.Writer, *net/http.Request)     0"".(*Service).writeQuery   ˜  0"".(*Service).writeQuery      8go.string.hdr."writeRequest"   ¨  "go.importpath."".   °  Ntype.func(io.Writer, *net/http.Request)   ¸  htype.func(*"".Service, io.Writer, *net/http.Request)   À  4"".(*Service).writeRequest   È  4"".(*Service).writeRequest   Ğ  Bgo.string.hdr."writeStringToSign"   Ø  "go.importpath."".   à  dtype.func(io.Writer, time.Time, *net/http.Request)   è  ~type.func(*"".Service, io.Writer, time.Time, *net/http.Request)   ğ  >"".(*Service).writeStringToSign   ø  >"".(*Service).writeStringToSign   €  0go.string.hdr."writeURI"   ˆ  "go.importpath."".     Ntype.func(io.Writer, *net/http.Request)   ˜  htype.func(*"".Service, io.Writer, *net/http.Request)      ,"".(*Service).writeURI   ¨  ,"".(*Service).writeURI   ş.go.string.hdr."[]uint8"             &go.string."[]uint8"   ş&go.string."[]uint8"   []uint8  ştype.[]uint8 X  X      ß~.8                                runtime.algarray   (  "runtime.gcbits.01   0  .go.string.hdr."[]uint8"   @  *go.weak.type.*[]uint8   H  "runtime.zerovalue   P  type.uint8   ş6go.typelink.[]uint8	[]uint8          type.[]uint8   ş„go.string.hdr."func(*aws4.Keys, *aws4.Service, time.Time) []uint8"       2      |go.string."func(*aws4.Keys, *aws4.Service, time.Time) []uint8"   ş|go.string."func(*aws4.Keys, *aws4.Service, time.Time) []uint8" h  ffunc(*aws4.Keys, *aws4.Service, time.Time) []uint8  şftype.func(*"".Keys, *"".Service, time.Time) []uint8 ¨  ¨      šxšH 3                                                                 °  runtime.algarray   (  "runtime.gcbits.01   0  „go.string.hdr."func(*aws4.Keys, *aws4.Service, time.Time) []uint8"   @  xgo.weak.type.*func(*"".Keys, *"".Service, time.Time) []uint8   H  "runtime.zerovalue   Xˆ ftype.func(*"".Keys, *"".Service, time.Time) []uint8   p  ftype.func(*"".Keys, *"".Service, time.Time) []uint8   ˆ  type.*"".Keys      type.*"".Service   ˜  type.time.Time      type.[]uint8   şÚgo.typelink.func(*aws4.Keys, *aws4.Service, time.Time) []uint8	func(*"".Keys, *"".Service, time.Time) []uint8          ftype.func(*"".Keys, *"".Service, time.Time) []uint8   ş(go.string.hdr."sign"              go.string."sign"   ş go.string."sign"   
+sign  şlgo.string.hdr."func(*aws4.Service, time.Time) []uint8"       &      dgo.string."func(*aws4.Service, time.Time) []uint8"   şdgo.string."func(*aws4.Service, time.Time) []uint8" P  Nfunc(*aws4.Service, time.Time) []uint8  şRtype.func(*"".Service, time.Time) []uint8           ?ùp, 3                                                             °  runtime.algarray   (  "runtime.gcbits.01   0  lgo.string.hdr."func(*aws4.Service, time.Time) []uint8"   @  dgo.weak.type.*func(*"".Service, time.Time) []uint8   H  "runtime.zerovalue   Xˆ Rtype.func(*"".Service, time.Time) []uint8   p˜ Rtype.func(*"".Service, time.Time) []uint8   ˆ   type.*"".Service     type.time.Time   ˜  type.[]uint8   ş®go.typelink.func(*aws4.Service, time.Time) []uint8	func(*"".Service, time.Time) []uint8          Rtype.func(*"".Service, time.Time) []uint8   ştype.*"".Keys  °  °      ®j 6                                                                       @  runtime.algarray   (  "runtime.gcbits.01   0  4go.string.hdr."*aws4.Keys"   @  ,go.weak.type.**"".Keys   H  "runtime.zerovalue   P  type."".Keys   8X type.*"".Keys   h€ type.*"".Keys   €  (go.string.hdr."sign"   ˆ  "go.importpath."".     Rtype.func(*"".Service, time.Time) []uint8   ˜  ftype.func(*"".Keys, *"".Service, time.Time) []uint8      "".(*Keys).sign   ¨  "".(*Keys).sign   ş2go.string.hdr."aws4.Keys"       	      *go.string."aws4.Keys"   ş*go.string."aws4.Keys"   aws4.Keys  ş2go.string.hdr."AccessKey"       	      *go.string."AccessKey"   ş*go.string."AccessKey"   AccessKey  ş2go.string.hdr."SecretKey"       	      *go.string."SecretKey"   ş*go.string."SecretKey"   SecretKey  ş(go.string.hdr."Keys"              go.string."Keys"   ş go.string."Keys"   
+Keys  ştype."".Keys  à  à      ³MÀ                                                                                                 "type..alg."".Keys   (  "runtime.gcbits.05   0  2go.string.hdr."aws4.Keys"   @  type.*"".Keys   H  "runtime.zerovalue   Ph type."".Keys   h  2go.string.hdr."AccessKey"   x  type.string     2go.string.hdr."SecretKey"      type.string   8¸ type."".Keys   ¸  (go.string.hdr."Keys"   À  "go.importpath."".   Èà type."".Keys   ş"runtime.gcbits.03    ş6go.string.hdr."aws4.Client"             .go.string."aws4.Client"   ş.go.string."aws4.Client"   aws4.Client  ş,go.string.hdr."Client"             $go.string."Client"   ş$go.string."Client"   Client  ştype."".Client  à  à      oĞß                                                                                               P  runtime.algarray   (  "runtime.gcbits.03   0  6go.string.hdr."aws4.Client"   @  type.*"".Client   H  "runtime.zerovalue   Ph type."".Client   h  (go.string.hdr."Keys"   x  type.*"".Keys     ,go.string.hdr."Client"      *type.*net/http.Client   8¸ type."".Client   ¸  ,go.string.hdr."Client"   À  "go.importpath."".   Èà type."".Client   ş8go.string.hdr."*aws4.Client"             0go.string."*aws4.Client"   ş0go.string."*aws4.Client"    *aws4.Client  ş’go.string.hdr."func(*aws4.Client, *http.Request) (*http.Response, error)"       9      Šgo.string."func(*aws4.Client, *http.Request) (*http.Response, error)"   şŠgo.string."func(*aws4.Client, *http.Request) (*http.Response, error)" x  tfunc(*aws4.Client, *http.Request) (*http.Response, error)  şˆtype.func(*"".Client, *net/http.Request) (*net/http.Response, error) ¨  ¨      Êh 3                                                                 °  runtime.algarray   (  "runtime.gcbits.01   0  ’go.string.hdr."func(*aws4.Client, *http.Request) (*http.Response, error)"   @  šgo.weak.type.*func(*"".Client, *net/http.Request) (*net/http.Response, error)   H  "runtime.zerovalue   Xˆ ˆtype.func(*"".Client, *net/http.Request) (*net/http.Response, error)   p˜ ˆtype.func(*"".Client, *net/http.Request) (*net/http.Response, error)   ˆ  type.*"".Client     ,type.*net/http.Request   ˜  .type.*net/http.Response      type.error   şŠgo.typelink.func(*aws4.Client, *http.Request) (*http.Response, error)	func(*"".Client, *net/http.Request) (*net/http.Response, error)          ˆtype.func(*"".Client, *net/http.Request) (*net/http.Response, error)   ş„go.string.hdr."func(*aws4.Client, string) (*http.Response, error)"       2      |go.string."func(*aws4.Client, string) (*http.Response, error)"   ş|go.string."func(*aws4.Client, string) (*http.Response, error)" h  ffunc(*aws4.Client, string) (*http.Response, error)  şrtype.func(*"".Client, string) (*net/http.Response, error) ¨  ¨      ¦(® 3                                                                 °  runtime.algarray   (  "runtime.gcbits.01   0  „go.string.hdr."func(*aws4.Client, string) (*http.Response, error)"   @  „go.weak.type.*func(*"".Client, string) (*net/http.Response, error)   H  "runtime.zerovalue   Xˆ rtype.func(*"".Client, string) (*net/http.Response, error)   p˜ rtype.func(*"".Client, string) (*net/http.Response, error)   ˆ  type.*"".Client     type.string   ˜  .type.*net/http.Response      type.error   şægo.typelink.func(*aws4.Client, string) (*http.Response, error)	func(*"".Client, string) (*net/http.Response, error)          rtype.func(*"".Client, string) (*net/http.Response, error)   şªgo.string.hdr."func(*aws4.Client, string, string, io.Reader) (*http.Response, error)"       E      ¢go.string."func(*aws4.Client, string, string, io.Reader) (*http.Response, error)"   ş¢go.string."func(*aws4.Client, string, string, io.Reader) (*http.Response, error)"   Œfunc(*aws4.Client, string, string, io.Reader) (*http.Response, error)  ş˜type.func(*"".Client, string, string, io.Reader) (*net/http.Response, error) ¸  ¸      FŞƒ 3                                                                         °  runtime.algarray   (  "runtime.gcbits.01   0  ªgo.string.hdr."func(*aws4.Client, string, string, io.Reader) (*http.Response, error)"   @  ªgo.weak.type.*func(*"".Client, string, string, io.Reader) (*net/http.Response, error)   H  "runtime.zerovalue   Xˆ ˜type.func(*"".Client, string, string, io.Reader) (*net/http.Response, error)   p¨ ˜type.func(*"".Client, string, string, io.Reader) (*net/http.Response, error)   ˆ  type.*"".Client     type.string   ˜  type.string      type.io.Reader   ¨  .type.*net/http.Response   °  type.error   ş²go.typelink.func(*aws4.Client, string, string, io.Reader) (*http.Response, error)	func(*"".Client, string, string, io.Reader) (*net/http.Response, error)          ˜type.func(*"".Client, string, string, io.Reader) (*net/http.Response, error)   şœgo.string.hdr."func(*aws4.Client, string, url.Values) (*http.Response, error)"       >      ”go.string."func(*aws4.Client, string, url.Values) (*http.Response, error)"   ş”go.string."func(*aws4.Client, string, url.Values) (*http.Response, error)" €  ~func(*aws4.Client, string, url.Values) (*http.Response, error)  ş’type.func(*"".Client, string, net/url.Values) (*net/http.Response, error) °  °      "D² 3                                                                     °  runtime.algarray   (  "runtime.gcbits.01   0  œgo.string.hdr."func(*aws4.Client, string, url.Values) (*http.Response, error)"   @  ¤go.weak.type.*func(*"".Client, string, net/url.Values) (*net/http.Response, error)   H  "runtime.zerovalue   Xˆ ’type.func(*"".Client, string, net/url.Values) (*net/http.Response, error)   p  ’type.func(*"".Client, string, net/url.Values) (*net/http.Response, error)   ˆ  type.*"".Client     type.string   ˜  &type.net/url.Values      .type.*net/http.Response   ¨  type.error   şgo.typelink.func(*aws4.Client, string, url.Values) (*http.Response, error)	func(*"".Client, string, net/url.Values) (*net/http.Response, error)          ’type.func(*"".Client, string, net/url.Values) (*net/http.Response, error)   ş^go.string.hdr."func(*aws4.Client) *http.Client"             Vgo.string."func(*aws4.Client) *http.Client"   şVgo.string."func(*aws4.Client) *http.Client" @  @func(*aws4.Client) *http.Client  şLtype.func(*"".Client) *net/http.Client ˜  ˜      Ïk5s 3                                                         °  runtime.algarray   (  "runtime.gcbits.01   0  ^go.string.hdr."func(*aws4.Client) *http.Client"   @  ^go.weak.type.*func(*"".Client) *net/http.Client   H  "runtime.zerovalue   Xˆ Ltype.func(*"".Client) *net/http.Client   p Ltype.func(*"".Client) *net/http.Client   ˆ  type.*"".Client     *type.*net/http.Client   şšgo.typelink.func(*aws4.Client) *http.Client	func(*"".Client) *net/http.Client          Ltype.func(*"".Client) *net/http.Client   ş$go.string.hdr."Do"             go.string."Do"   şgo.string."Do"   Do  şvgo.string.hdr."func(*http.Request) (*http.Response, error)"       +      ngo.string."func(*http.Request) (*http.Response, error)"   şngo.string."func(*http.Request) (*http.Response, error)" X  Xfunc(*http.Request) (*http.Response, error)  şptype.func(*net/http.Request) (*net/http.Response, error)           BĞ›E 3                                                             °  runtime.algarray   (  "runtime.gcbits.01   0  vgo.string.hdr."func(*http.Request) (*http.Response, error)"   @  ‚go.weak.type.*func(*net/http.Request) (*net/http.Response, error)   H  "runtime.zerovalue   Xˆ ptype.func(*net/http.Request) (*net/http.Response, error)   p ptype.func(*net/http.Request) (*net/http.Response, error)   ˆ  ,type.*net/http.Request     .type.*net/http.Response   ˜  type.error   şÖgo.typelink.func(*http.Request) (*http.Response, error)	func(*net/http.Request) (*net/http.Response, error)          ptype.func(*net/http.Request) (*net/http.Response, error)   ş&go.string.hdr."Get"             go.string."Get"   şgo.string."Get"   Get  şhgo.string.hdr."func(string) (*http.Response, error)"       $      `go.string."func(string) (*http.Response, error)"   ş`go.string."func(string) (*http.Response, error)" P  Jfunc(string) (*http.Response, error)  şZtype.func(string) (*net/http.Response, error)           ¬ÇØË 3                                                             °  runtime.algarray   (  "runtime.gcbits.01   0  hgo.string.hdr."func(string) (*http.Response, error)"   @  lgo.weak.type.*func(string) (*net/http.Response, error)   H  "runtime.zerovalue   Xˆ Ztype.func(string) (*net/http.Response, error)   p Ztype.func(string) (*net/http.Response, error)   ˆ  type.string     .type.*net/http.Response   ˜  type.error   ş²go.typelink.func(string) (*http.Response, error)	func(string) (*net/http.Response, error)          Ztype.func(string) (*net/http.Response, error)   ş(go.string.hdr."Head"              go.string."Head"   ş go.string."Head"   
+Head  ş(go.string.hdr."Post"              go.string."Post"   ş go.string."Post"   
+Post  şgo.string.hdr."func(string, string, io.Reader) (*http.Response, error)"       7      †go.string."func(string, string, io.Reader) (*http.Response, error)"   ş†go.string."func(string, string, io.Reader) (*http.Response, error)" p  pfunc(string, string, io.Reader) (*http.Response, error)  ş€type.func(string, string, io.Reader) (*net/http.Response, error) °  °      ñEõ¯ 3                                                                     °  runtime.algarray   (  "runtime.gcbits.01   0  go.string.hdr."func(string, string, io.Reader) (*http.Response, error)"   @  ’go.weak.type.*func(string, string, io.Reader) (*net/http.Response, error)   H  "runtime.zerovalue   Xˆ €type.func(string, string, io.Reader) (*net/http.Response, error)   p  €type.func(string, string, io.Reader) (*net/http.Response, error)   ˆ  type.string     type.string   ˜  type.io.Reader      .type.*net/http.Response   ¨  type.error   şşgo.typelink.func(string, string, io.Reader) (*http.Response, error)	func(string, string, io.Reader) (*net/http.Response, error)          €type.func(string, string, io.Reader) (*net/http.Response, error)   ş0go.string.hdr."PostForm"             (go.string."PostForm"   ş(go.string."PostForm"   PostForm  ş€go.string.hdr."func(string, url.Values) (*http.Response, error)"       0      xgo.string."func(string, url.Values) (*http.Response, error)"   şxgo.string."func(string, url.Values) (*http.Response, error)" h  bfunc(string, url.Values) (*http.Response, error)  şztype.func(string, net/url.Values) (*net/http.Response, error) ¨  ¨      v¦'¦ 3                                                                 °  runtime.algarray   (  "runtime.gcbits.01   0  €go.string.hdr."func(string, url.Values) (*http.Response, error)"   @  Œgo.weak.type.*func(string, net/url.Values) (*net/http.Response, error)   H  "runtime.zerovalue   Xˆ ztype.func(string, net/url.Values) (*net/http.Response, error)   p˜ ztype.func(string, net/url.Values) (*net/http.Response, error)   ˆ  type.string     &type.net/url.Values   ˜  .type.*net/http.Response      type.error   şêgo.typelink.func(string, url.Values) (*http.Response, error)	func(string, net/url.Values) (*net/http.Response, error)          ztype.func(string, net/url.Values) (*net/http.Response, error)   ş,go.string.hdr."client"             $go.string."client"   ş$go.string."client"   client  şFgo.string.hdr."func() *http.Client"             >go.string."func() *http.Client"   ş>go.string."func() *http.Client" (  (func() *http.Client  ş8type.func() *net/http.Client         <»š 3                                                       °  runtime.algarray   (  "runtime.gcbits.01   0  Fgo.string.hdr."func() *http.Client"   @  Jgo.weak.type.*func() *net/http.Client   H  "runtime.zerovalue   Xˆ 8type.func() *net/http.Client   pˆ 8type.func() *net/http.Client   ˆ  *type.*net/http.Client   şngo.typelink.func() *http.Client	func() *net/http.Client          8type.func() *net/http.Client   ştype.*"".Client            AwûW 6                                                                                                                                                                                              N @  runtime.algarray   (  "runtime.gcbits.01   0  8go.string.hdr."*aws4.Client"   @  0go.weak.type.**"".Client   H  "runtime.zerovalue   P  type."".Client   8X type.*"".Client   h€ type.*"".Client   €  $go.string.hdr."Do"     ptype.func(*net/http.Request) (*net/http.Response, error)   ˜  ˆtype.func(*"".Client, *net/http.Request) (*net/http.Response, error)      "".(*Client).Do   ¨  "".(*Client).Do   °  &go.string.hdr."Get"   À  Ztype.func(string) (*net/http.Response, error)   È  rtype.func(*"".Client, string) (*net/http.Response, error)   Ğ   "".(*Client).Get   Ø   "".(*Client).Get   à  (go.string.hdr."Head"   ğ  Ztype.func(string) (*net/http.Response, error)   ø  rtype.func(*"".Client, string) (*net/http.Response, error)   €  """.(*Client).Head   ˆ  """.(*Client).Head     (go.string.hdr."Post"      €type.func(string, string, io.Reader) (*net/http.Response, error)   ¨  ˜type.func(*"".Client, string, string, io.Reader) (*net/http.Response, error)   °  """.(*Client).Post   ¸  """.(*Client).Post   À  0go.string.hdr."PostForm"   Ğ  ztype.func(string, net/url.Values) (*net/http.Response, error)   Ø  ’type.func(*"".Client, string, net/url.Values) (*net/http.Response, error)   à  *"".(*Client).PostForm   è  *"".(*Client).PostForm   ğ  ,go.string.hdr."client"   ø  "go.importpath."".   €  8type.func() *net/http.Client   ˆ  Ltype.func(*"".Client) *net/http.Client     &"".(*Client).client   ˜  &"".(*Client).client   ş type..hashfunc32              ,runtime.memhash_varlen   ştype..eqfunc32              .runtime.memequal_varlen   ştype..alg32               type..hashfunc32     type..eqfunc32   şruntime.gcbits.      ş2go.string.hdr."[32]uint8"       	      *go.string."[32]uint8"   ş*go.string."[32]uint8"   [32]uint8  ştype.[32]uint8 h  h        œYÿ¨ ‘                                       type..alg32   (  runtime.gcbits.   0  2go.string.hdr."[32]uint8"   @  .go.weak.type.*[32]uint8   H  "runtime.zerovalue   P  type.uint8   X  type.[]uint8   ş>go.typelink.[32]uint8	[32]uint8          type.[32]uint8   ş0go.string.hdr."[]string"             (go.string."[]string"   ş(go.string."[]string"   []string  ştype.[]string X  X      Ó¨ó
+                                runtime.algarray   (  "runtime.gcbits.01   0  0go.string.hdr."[]string"   @  ,go.weak.type.*[]string   H  "runtime.zerovalue   P  type.string   ş:go.typelink.[]string	[]string          type.[]string   ş8go.string.hdr."interface {}"             0go.string."interface {}"   ş0go.string."interface {}"    interface {}  ş"type.interface {} h  h      çW                                       €  runtime.algarray   (  "runtime.gcbits.03   0  8go.string.hdr."interface {}"   @  4go.weak.type.*interface {}   H  "runtime.zerovalue   Ph "type.interface {}   ş<go.string.hdr."[]interface {}"             4go.string."[]interface {}"   ş4go.string."[]interface {}"    []interface {}  ş&type.[]interface {} X  X      p“ê/                                runtime.algarray   (  "runtime.gcbits.01   0  <go.string.hdr."[]interface {}"   @  8go.weak.type.*[]interface {}   H  "runtime.zerovalue   P  "type.interface {}   şRgo.typelink.[]interface {}	[]interface {}          &type.[]interface {}   şTgclocalsÂ·33cdeccccebe80329f1fdbee7f5874cb           şTgclocalsÂ·0b86ef39f3fed835f14ba5f4d7c62fa2             şTgclocalsÂ·a8eabfc4a4514ed6b3b0c61e9680e440              şTgclocalsÂ·3bb21ca8fe1d99a3e492463bd711418a             ş<type..hashfunc.[1]interface {}          4type..hash.[1]interface {}   ş8type..eqfunc.[1]interface {}          0type..eq.[1]interface {}   ş2type..alg.[1]interface {}              <type..hashfunc.[1]interface {}     8type..eqfunc.[1]interface {}   ş>go.string.hdr."[1]interface {}"             6go.string."[1]interface {}"   ş6go.string."[1]interface {}"     [1]interface {}  ş(type.[1]interface {} h  h      P‘[ú                                       2type..alg.[1]interface {}   (  "runtime.gcbits.03   0  >go.string.hdr."[1]interface {}"   @  :go.weak.type.*[1]interface {}   H  "runtime.zerovalue   P  "type.interface {}   X  &type.[]interface {}   şVgo.typelink.[1]interface {}	[1]interface {}          (type.[1]interface {}   ş@go.string.hdr."*[1]interface {}"             8go.string."*[1]interface {}"   ş8go.string."*[1]interface {}" (  "*[1]interface {}  ş*type.*[1]interface {} X  X      ¿¨5 6                             @  runtime.algarray   (  "runtime.gcbits.01   0  @go.string.hdr."*[1]interface {}"   @  <go.weak.type.**[1]interface {}   H  "runtime.zerovalue   P  (type.[1]interface {}   ş0go.string.hdr."[2]uint8"             (go.string."[2]uint8"   ş(go.string."[2]uint8"   [2]uint8  ştype.[2]uint8 h  h       ¢ûF ‘                                    0  runtime.algarray   (  runtime.gcbits.   0  0go.string.hdr."[2]uint8"   @  ,go.weak.type.*[2]uint8   H  "runtime.zerovalue   P  type.uint8   X  type.[]uint8   ş:go.typelink.[2]uint8	[2]uint8          type.[2]uint8   ş2go.string.hdr."*[2]uint8"       	      *go.string."*[2]uint8"   ş*go.string."*[2]uint8"   *[2]uint8  ştype.*[2]uint8 X  X      ş° 6                             @  runtime.algarray   (  "runtime.gcbits.01   0  2go.string.hdr."*[2]uint8"   @  .go.weak.type.**[2]uint8   H  "runtime.zerovalue   P  type.[2]uint8   ş0go.string.hdr."[1]uint8"             (go.string."[1]uint8"   ş(go.string."[1]uint8"   [1]uint8  ştype.[1]uint8 h  h       16Ê ‘                                       runtime.algarray   (  runtime.gcbits.   0  0go.string.hdr."[1]uint8"   @  ,go.weak.type.*[1]uint8   H  "runtime.zerovalue   P  type.uint8   X  type.[]uint8   ş:go.typelink.[1]uint8	[1]uint8          type.[1]uint8   ş2go.string.hdr."*[]string"       	      *go.string."*[]string"   ş*go.string."*[]string"   *[]string  ştype.*[]string X  X      ’"v„ 6                             @  runtime.algarray   (  "runtime.gcbits.01   0  2go.string.hdr."*[]string"   @  .go.weak.type.**[]string   H  "runtime.zerovalue   P  type.[]string   ş0go.string.hdr."[8]uint8"             (go.string."[8]uint8"   ş(go.string."[8]uint8"   [8]uint8  ştype.[8]uint8 h  h       >ù0´ ‘                                    P  runtime.algarray   (  runtime.gcbits.   0  0go.string.hdr."[8]uint8"   @  ,go.weak.type.*[8]uint8   H  "runtime.zerovalue   P  type.uint8   X  type.[]uint8   ş:go.typelink.[8]uint8	[8]uint8          type.[8]uint8   şTgclocalsÂ·33cdeccccebe80329f1fdbee7f5874cb           şTgclocalsÂ·0b86ef39f3fed835f14ba5f4d7c62fa2             şTgclocalsÂ·a8eabfc4a4514ed6b3b0c61e9680e440              şTgclocalsÂ·3bb21ca8fe1d99a3e492463bd711418a             ş0type..hashfunc.[8]string          (type..hash.[8]string   ş,type..eqfunc.[8]string          $type..eq.[8]string   ş&type..alg.[8]string              0type..hashfunc.[8]string     ,type..eqfunc.[8]string   ş&runtime.gcbits.5555   UU ş2go.string.hdr."[8]string"       	      *go.string."[8]string"   ş*go.string."[8]string"   [8]string  ştype.[8]string h  h@   <   USŒ>                                       &type..alg.[8]string   (  &runtime.gcbits.5555   0  2go.string.hdr."[8]string"   @  .go.weak.type.*[8]string   H  "runtime.zerovalue   P  type.string   X  type.[]string   ş>go.typelink.[8]string	[8]string          type.[8]string   ş4go.string.hdr."[][]string"       
+      ,go.string."[][]string"   ş,go.string."[][]string"   [][]string  ştype.[][]string X  X      ¼:è                                runtime.algarray   (  "runtime.gcbits.01   0  4go.string.hdr."[][]string"   @  0go.weak.type.*[][]string   H  "runtime.zerovalue   P  type.[]string   şBgo.typelink.[][]string	[][]string          type.[][]string   ş*runtime.gcbits.499224   I’$ ş6go.string.hdr."[8][]string"             .go.string."[8][]string"   ş.go.string."[8][]string"   [8][]string  ş type.[8][]string h  h`   X   ½e³r                                     p  runtime.algarray   (  *runtime.gcbits.499224   0  6go.string.hdr."[8][]string"   @  2go.weak.type.*[8][]string   H  "runtime.zerovalue   P  type.[]string   X  type.[][]string   şFgo.typelink.[8][]string	[8][]string           type.[8][]string   ş6runtime.gcbits.545525499204   TU%I’ şTgo.string.hdr."map.bucket[string][]string"             Lgo.string."map.bucket[string][]string"   şLgo.string."map.bucket[string][]string" 8  6map.bucket[string][]string  ş.go.string.hdr."topbits"             &go.string."topbits"   ş&go.string."topbits"   topbits  ş(go.string.hdr."keys"              go.string."keys"   ş go.string."keys"   
+keys  ş,go.string.hdr."values"             $go.string."values"   ş$go.string."values"   values  ş0go.string.hdr."overflow"             (go.string."overflow"   ş(go.string."overflow"   overflow  ş>type.map.bucket[string][]string ˆ  ˆ¬   ¬   úTJ¹                                                                                          H                   ¨    p  runtime.algarray   (  6runtime.gcbits.545525499204   0  Tgo.string.hdr."map.bucket[string][]string"   @  Pgo.weak.type.*map.bucket[string][]string   H  "runtime.zerovalue   Ph >type.map.bucket[string][]string   h  .go.string.hdr."topbits"   x  type.[8]uint8     (go.string.hdr."keys"      type.[8]string   ¸  ,go.string.hdr."values"   È   type.[8][]string   à  0go.string.hdr."overflow"   ğ  @type.*map.bucket[string][]string   şVgo.string.hdr."*map.bucket[string][]string"             Ngo.string."*map.bucket[string][]string"   şNgo.string."*map.bucket[string][]string" 8  8*map.bucket[string][]string  ş@type.*map.bucket[string][]string X  X      ÄY¬R 6                             @  runtime.algarray   (  "runtime.gcbits.01   0  Vgo.string.hdr."*map.bucket[string][]string"   @  Rgo.weak.type.**map.bucket[string][]string   H  "runtime.zerovalue   P  >type.map.bucket[string][]string   ş"runtime.gcbits.58   X şNgo.string.hdr."map.hdr[string][]string"             Fgo.string."map.hdr[string][]string"   şFgo.string."map.hdr[string][]string" 0  0map.hdr[string][]string  ş*go.string.hdr."count"             "go.string."count"   ş"go.string."count"   count  ş*go.string.hdr."flags"             "go.string."flags"   ş"go.string."flags"   flags  ş"go.string.hdr."B"             go.string."B"   şgo.string."B"   B  ş*go.string.hdr."hash0"             "go.string."hash0"   ş"go.string."hash0"   hash0  ş.go.string.hdr."buckets"             &go.string."buckets"   ş&go.string."buckets"   buckets  ş4go.string.hdr."oldbuckets"       
+      ,go.string."oldbuckets"   ş,go.string."oldbuckets"   oldbuckets  ş2go.string.hdr."nevacuate"       	      *go.string."nevacuate"   ş*go.string."nevacuate"   nevacuate  ş8type.map.hdr[string][]string ¨  ¨      –‹˜                                                                                                                                                                                            , p  runtime.algarray   (  "runtime.gcbits.58   0  Ngo.string.hdr."map.hdr[string][]string"   @  Jgo.weak.type.*map.hdr[string][]string   H  "runtime.zerovalue   Ph 8type.map.hdr[string][]string   h  *go.string.hdr."count"   x  type.int     *go.string.hdr."flags"      type.uint8   ¸  "go.string.hdr."B"   È  type.uint8   à  *go.string.hdr."hash0"   ğ  type.uint32   ˆ  .go.string.hdr."buckets"   ˜  @type.*map.bucket[string][]string   °  4go.string.hdr."oldbuckets"   À  @type.*map.bucket[string][]string   Ø  2go.string.hdr."nevacuate"   è  type.uintptr   €  0go.string.hdr."overflow"     &type.unsafe.Pointer   şPgo.string.hdr."*map.hdr[string][]string"             Hgo.string."*map.hdr[string][]string"   şHgo.string."*map.hdr[string][]string" 8  2*map.hdr[string][]string  ş:type.*map.hdr[string][]string X  X      /I 6                             @  runtime.algarray   (  "runtime.gcbits.01   0  Pgo.string.hdr."*map.hdr[string][]string"   @  Lgo.weak.type.**map.hdr[string][]string   H  "runtime.zerovalue   P  8type.map.hdr[string][]string   ş"runtime.gcbits.ff   ÿ şPgo.string.hdr."map.iter[string][]string"             Hgo.string."map.iter[string][]string"   şHgo.string."map.iter[string][]string" 8  2map.iter[string][]string  ş&go.string.hdr."key"             go.string."key"   şgo.string."key"   key  ş&go.string.hdr."val"             go.string."val"   şgo.string."val"   val  ş"go.string.hdr."t"             go.string."t"   şgo.string."t"   t  ş"go.string.hdr."h"             go.string."h"   şgo.string."h"   h  ş(go.string.hdr."bptr"              go.string."bptr"   ş go.string."bptr"   
+bptr  ş2go.string.hdr."overflow0"       	      *go.string."overflow0"   ş*go.string."overflow0"   overflow0  ş2go.string.hdr."overflow1"       	      *go.string."overflow1"   ş*go.string."overflow1"   overflow1  ş6go.string.hdr."startBucket"             .go.string."startBucket"   ş.go.string."startBucket"   startBucket  ş*go.string.hdr."stuff"             "go.string."stuff"   ş"go.string."stuff"   stuff  ş,go.string.hdr."bucket"             $go.string."bucket"   ş$go.string."bucket"   bucket  ş6go.string.hdr."checkBucket"             .go.string."checkBucket"   ş.go.string."checkBucket"   checkBucket  ş:type.map.iter[string][]string È  È0       ïE,¡                                                                                                                                                                                                                                $                   (                   ,   < p  runtime.algarray   (  "runtime.gcbits.ff   0  Pgo.string.hdr."map.iter[string][]string"   @  Lgo.weak.type.*map.iter[string][]string   H  "runtime.zerovalue   Ph :type.map.iter[string][]string   h  &go.string.hdr."key"   x  type.*string     &go.string.hdr."val"      type.*[]string   ¸  "go.string.hdr."t"   È  type.*uint8   à  "go.string.hdr."h"   ğ  :type.*map.hdr[string][]string   ˆ  .go.string.hdr."buckets"   ˜  @type.*map.bucket[string][]string   °  (go.string.hdr."bptr"   À  @type.*map.bucket[string][]string   Ø  2go.string.hdr."overflow0"   è  &type.unsafe.Pointer   €  2go.string.hdr."overflow1"     &type.unsafe.Pointer   ¨  6go.string.hdr."startBucket"   ¸  type.uintptr   Ğ  *go.string.hdr."stuff"   à  type.uintptr   ø  ,go.string.hdr."bucket"   ˆ  type.uintptr      6go.string.hdr."checkBucket"   °  type.uintptr   ş2go.string.hdr."*[1]uint8"       	      *go.string."*[1]uint8"   ş*go.string."*[1]uint8"   *[1]uint8  ştype.*[1]uint8 X  X      ±˜~[ 6                             @  runtime.algarray   (  "runtime.gcbits.01   0  2go.string.hdr."*[1]uint8"   @  .go.weak.type.**[1]uint8   H  "runtime.zerovalue   P  type.[1]uint8   şTgclocalsÂ·33cdeccccebe80329f1fdbee7f5874cb           şTgclocalsÂ·0b86ef39f3fed835f14ba5f4d7c62fa2             şTgclocalsÂ·a8eabfc4a4514ed6b3b0c61e9680e440              şTgclocalsÂ·3bb21ca8fe1d99a3e492463bd711418a             ş0type..hashfunc.[6]string          (type..hash.[6]string   ş,type..eqfunc.[6]string          $type..eq.[6]string   ş&type..alg.[6]string              0type..hashfunc.[6]string     ,type..eqfunc.[6]string   ş&runtime.gcbits.5505   U ş2go.string.hdr."[6]string"       	      *go.string."[6]string"   ş*go.string."[6]string"   [6]string  ştype.[6]string h  h0   ,   :æ~                                       &type..alg.[6]string   (  &runtime.gcbits.5505   0  2go.string.hdr."[6]string"   @  .go.weak.type.*[6]string   H  "runtime.zerovalue   P  type.string   X  type.[]string   ş>go.typelink.[6]string	[6]string          type.[6]string   ş4go.string.hdr."*[6]string"       
+      ,go.string."*[6]string"   ş,go.string."*[6]string"   *[6]string  ştype.*[6]string X  X      ¾ÉY 6                             @  runtime.algarray   (  "runtime.gcbits.01   0  4go.string.hdr."*[6]string"   @  0go.weak.type.**[6]string   H  "runtime.zerovalue   P  type.[6]string   ş4go.string.hdr."*[8]string"       
+      ,go.string."*[8]string"   ş,go.string."*[8]string"   *[8]string  ştype.*[8]string X  X      ­”o 6                             @  runtime.algarray   (  "runtime.gcbits.01   0  4go.string.hdr."*[8]string"   @  0go.weak.type.**[8]string   H  "runtime.zerovalue   P  type.[8]string   ş.go.string.hdr."runtime"             &go.string."runtime"   ş&go.string."runtime"   runtime  ş,go.importpath.runtime.             &go.string."runtime"   ş$go.string.hdr."io"             go.string."io"   şgo.string."io"   io  ş"go.importpath.io.             go.string."io"   ş0go.string.hdr."net/http"             (go.string."net/http"   ş(go.string."net/http"   net/http  ş.go.importpath.net/http.             (go.string."net/http"   ş&go.string.hdr."fmt"             go.string."fmt"   şgo.string."fmt"   fmt  ş$go.importpath.fmt.             go.string."fmt"   ş$go.string.hdr."os"             go.string."os"   şgo.string."os"   os  ş"go.importpath.os.             go.string."os"   ş2go.string.hdr."io/ioutil"       	      *go.string."io/ioutil"   ş*go.string."io/ioutil"   io/ioutil  ş0go.importpath.io/ioutil.       	      *go.string."io/ioutil"   ş*go.string.hdr."bytes"             "go.string."bytes"   ş"go.string."bytes"   bytes  ş(go.importpath.bytes.             "go.string."bytes"   ş(go.string.hdr."time"              go.string."time"   ş go.string."time"   
+time  ş&go.importpath.time.              go.string."time"   ş(go.string.hdr."sort"              go.string."sort"   ş go.string."sort"   
+sort  ş&go.importpath.sort.              go.string."sort"   ş:go.string.hdr."path/filepath"             2go.string."path/filepath"   ş2go.string."path/filepath"    path/filepath  ş8go.importpath.path/filepath.             2go.string."path/filepath"   ş.go.string.hdr."net/url"             &go.string."net/url"   ş&go.string."net/url"   net/url  ş,go.importpath.net/url.             &go.string."net/url"   ş.go.string.hdr."strings"             &go.string."strings"   ş&go.string."strings"   strings  ş,go.importpath.strings.             &go.string."strings"   ş6go.string.hdr."crypto/hmac"             .go.string."crypto/hmac"   ş.go.string."crypto/hmac"   crypto/hmac  ş4go.importpath.crypto/hmac.             .go.string."crypto/hmac"   ş:go.string.hdr."crypto/sha256"             2go.string."crypto/sha256"   ş2go.string."crypto/sha256"    crypto/sha256  ş8go.importpath.crypto/sha256.             2go.string."crypto/sha256"   ş*type..hash."".KeysÂ·f          $type..hash."".Keys   ş&type..eq."".KeysÂ·f           type..eq."".Keys   ş0type..hash."".ServiceÂ·f          *type..hash."".Service   ş,type..eq."".ServiceÂ·f          &type..eq."".Service   ş:type..hash.[1]interface {}Â·f          4type..hash.[1]interface {}   ş6type..eq.[1]interface {}Â·f          0type..eq.[1]interface {}   ş.type..hash.[8]stringÂ·f          (type..hash.[8]string   ş*type..eq.[8]stringÂ·f          $type..eq.[8]string   ş.type..hash.[6]stringÂ·f          (type..hash.[6]string   ş*type..eq.[6]stringÂ·f          $type..eq.[6]string   ş"runtime.zerovalue      ÿÿgo13ld
