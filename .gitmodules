@@ -1,0 +1,6 @@
+[submodule "golang/src/github.com/bmizerany/aws4"]
+	path = golang/src/github.com/bmizerany/aws4
+	url = ../../bmizerany/aws4
+[submodule "golang/src/github.com/jpadilla/ivona-go"]
+	path = golang/src/github.com/jpadilla/ivona-go
+	url = ../../jpadilla/ivona-go
