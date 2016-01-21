@@ -8,7 +8,7 @@ import (
 )
 func main() {
 	client := ivona.New("", "")
-	text, err := ioutil.ReadFile("/home/aliaksandr/work/ivona/book.txt")
+	text, err := ioutil.ReadFile("/home/aliaksandr/work/ivona/audiobook/book.txt")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -31,7 +31,7 @@ func main() {
 		}
 
 		i++
-		file := fmt.Sprintf("/home/aliaksandr/work/ivona/audiobook/ivona/tts%04d.ogg", i) // files like 0001.ogg
+		file := fmt.Sprintf("/home/aliaksandr/work/ivona/output/tts%04d.ogg", i) // files like 0001.ogg
 		ioutil.WriteFile(file, r.Audio, 0644)
 	}
 }
